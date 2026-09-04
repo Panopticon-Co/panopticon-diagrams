@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panopticon — UML Deployment</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper: #f5f5f5; --color-ink: #2d3142; --color-muted: #4f5d75; --color-accent: #eb6c36;
+      --font-sans: 'Geist', system-ui, sans-serif;
+      --font-serif: 'Instrument Serif', serif;
+      --font-mono: 'Geist Mono', ui-monospace, monospace;
+    }
+    body { font-family: var(--font-sans); background: var(--color-paper); color: var(--color-ink);
+           min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 3rem 2rem; }
+    .frame { max-width: 1400px; width: 100%; }
+    .eyebrow { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500; letter-spacing: 0.18em;
+               text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
+    h1 { font-family: var(--font-serif); font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem); font-weight: 400;
+         letter-spacing: -0.02em; line-height: 1.15; color: var(--color-ink); margin-bottom: 1.5rem; }
+    svg { width: 100%; min-width: 900px; display: block; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">UML Deployment &middot; The topology that actually runs</p>
+    <h1>Everything on one elevated Windows host</h1>
+
+    <svg viewBox="0 0 1300 780" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="deploy-title deploy-desc">
+      <title id="deploy-title">Panopticon Deployment Diagram</title>
+      <desc id="deploy-desc">UML deployment diagram showing a single elevated Windows 11 x64 host containing the Windows kernel and Event Log environment, the Officer agent process, the CPython environment running eyedetect with its SQLite spool and alerts file, the console environment, and a browser, connected by an anonymous stdout pipe, local file access and loopback HTTP.</desc>
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/></marker>
+        <marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2e5aa8"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f5f5f5"/>
+
+      <!-- ================= DEVICE NODE (3D box) ================= -->
+      <polygon points="48,112 64,96 1268,96 1252,112" fill="rgba(45,49,66,0.06)" stroke="rgba(45,49,66,0.35)" stroke-width="1"/>
+      <polygon points="1252,112 1268,96 1268,584 1252,600" fill="rgba(45,49,66,0.06)" stroke="rgba(45,49,66,0.35)" stroke-width="1"/>
+      <rect x="48" y="112" width="1204" height="488" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.35)" stroke-width="1"/>
+      <text x="68" y="136" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">&#171;device&#187;</text>
+      <text x="68" y="156" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif">Windows 11 x64 endpoint host &#8212; elevated (Administrator)</text>
+
+      <!-- ================= COMMUNICATION PATHS ================= -->
+      <line x1="266" y1="304" x2="266" y2="380" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <path d="M 452,432 H 478 Q 486,432 486,424 V 328 Q 486,320 494,320 H 516"
+            fill="none" stroke="#eb6c36" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+      <line x1="724" y1="384" x2="724" y2="436" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="928" y1="504" x2="992" y2="504" stroke="#2e5aa8" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+
+      <!-- ================= PATH LABELS ================= -->
+      <rect x="276" y="326" width="160" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="280" y="335" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">ETW + EVTSUBSCRIBE</text>
+
+      <rect x="496" y="392" width="152" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="500" y="401" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">ANONYMOUS PIPE</text>
+      <rect x="496" y="408" width="152" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="500" y="417" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">STDOUT, SCHEMA 0.3</text>
+
+      <rect x="734" y="398" width="176" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="738" y="407" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">LOCAL FILE, SAME DISK</text>
+
+      <rect x="928" y="468" width="64" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="960" y="477" fill="#2e5aa8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">HTTP</text>
+      <rect x="928" y="484" width="64" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="960" y="493" fill="#2e5aa8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">:8787</text>
+
+      <!-- ================= EXECUTION ENVIRONMENTS ================= -->
+      <rect x="80" y="176" width="372" height="128" rx="6" fill="#f5f5f5"/>
+      <rect x="80" y="176" width="372" height="128" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.35)" stroke-width="1"/>
+      <text x="96" y="196" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">&#171;execution environment&#187;</text>
+      <text x="96" y="214" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif">Windows kernel and Event Log</text>
+      <rect x="96" y="228" width="164" height="28" rx="4" fill="#ffffff" stroke="rgba(45,49,66,0.30)" stroke-width="0.8"/>
+      <rect x="102" y="234" width="10" height="14" fill="none" stroke="rgba(45,49,66,0.50)" stroke-width="0.8"/>
+      <text x="120" y="246" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace">Sysmon64.exe</text>
+      <rect x="96" y="264" width="288" height="28" rx="4" fill="#ffffff" stroke="rgba(45,49,66,0.30)" stroke-width="0.8"/>
+      <rect x="102" y="270" width="10" height="14" fill="none" stroke="rgba(45,49,66,0.50)" stroke-width="0.8"/>
+      <text x="120" y="282" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace">Microsoft-Windows-Kernel-Process</text>
+
+      <rect x="80" y="380" width="372" height="128" rx="6" fill="#f5f5f5"/>
+      <rect x="80" y="380" width="372" height="128" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.35)" stroke-width="1"/>
+      <text x="96" y="400" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">&#171;execution environment&#187;</text>
+      <text x="96" y="418" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif">Officer process</text>
+      <rect x="96" y="432" width="164" height="28" rx="4" fill="#ffffff" stroke="rgba(45,49,66,0.30)" stroke-width="0.8"/>
+      <rect x="102" y="438" width="10" height="14" fill="none" stroke="rgba(45,49,66,0.50)" stroke-width="0.8"/>
+      <text x="120" y="450" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace">officer-agent.exe</text>
+      <rect x="96" y="468" width="164" height="28" rx="4" fill="#ffffff" stroke="rgba(45,49,66,0.30)" stroke-width="0.8"/>
+      <rect x="102" y="474" width="10" height="14" fill="none" stroke="rgba(45,49,66,0.50)" stroke-width="0.8"/>
+      <text x="120" y="486" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace">tinyxml2.dll</text>
+
+      <rect x="516" y="176" width="412" height="208" rx="6" fill="#f5f5f5"/>
+      <rect x="516" y="176" width="412" height="208" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.35)" stroke-width="1"/>
+      <text x="532" y="196" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">&#171;execution environment&#187;</text>
+      <text x="532" y="214" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif">CPython 3.13 &#8212; eyedetect</text>
+      <rect x="532" y="228" width="240" height="28" rx="4" fill="#ffffff" stroke="rgba(45,49,66,0.30)" stroke-width="0.8"/>
+      <rect x="538" y="234" width="10" height="14" fill="none" stroke="rgba(45,49,66,0.50)" stroke-width="0.8"/>
+      <text x="556" y="246" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace">src/main.py + rules/ (86 YAML)</text>
+      <rect x="532" y="268" width="240" height="28" rx="4" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="0.8"/>
+      <rect x="538" y="274" width="10" height="14" fill="none" stroke="rgba(45,49,66,0.50)" stroke-width="0.8"/>
+      <text x="556" y="286" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace">spool/panopticon-v2.db (WAL)</text>
+      <rect x="532" y="308" width="240" height="28" rx="4" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="0.8"/>
+      <rect x="538" y="314" width="10" height="14" fill="none" stroke="rgba(45,49,66,0.50)" stroke-width="0.8"/>
+      <text x="556" y="326" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace">alerts.ndjson</text>
+      <text x="532" y="360" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace">producer thread + consumer thread</text>
+
+      <rect x="516" y="436" width="412" height="128" rx="6" fill="#f5f5f5"/>
+      <rect x="516" y="436" width="412" height="128" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.35)" stroke-width="1"/>
+      <text x="532" y="456" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">&#171;execution environment&#187;</text>
+      <text x="532" y="474" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif">CPython 3.9+ &#8212; console</text>
+      <rect x="532" y="488" width="240" height="28" rx="4" fill="#ffffff" stroke="rgba(45,49,66,0.30)" stroke-width="0.8"/>
+      <rect x="538" y="494" width="10" height="14" fill="none" stroke="rgba(45,49,66,0.50)" stroke-width="0.8"/>
+      <text x="556" y="506" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace">app.py + static/ (index, app.js)</text>
+      <text x="532" y="540" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace">ThreadingHTTPServer, stdlib only</text>
+
+      <rect x="992" y="436" width="228" height="128" rx="6" fill="#f5f5f5"/>
+      <rect x="992" y="436" width="228" height="128" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.35)" stroke-width="1"/>
+      <text x="1008" y="456" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">&#171;execution environment&#187;</text>
+      <text x="1008" y="474" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif">Web browser</text>
+      <text x="1008" y="500" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace">polls /api/alerts</text>
+      <text x="1008" y="516" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace">every 3 seconds</text>
+      <text x="1008" y="540" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace">CSP: default-src none</text>
+
+      <!-- ================= LEGEND ================= -->
+      <line x1="48" y1="640" x2="1252" y2="640" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <text x="48" y="660" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGEND</text>
+
+      <rect x="128" y="650" width="20" height="12" rx="2" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.35)" stroke-width="1"/>
+      <text x="156" y="660" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">EXECUTION ENVIRONMENT</text>
+
+      <rect x="336" y="650" width="20" height="12" rx="2" fill="#ffffff" stroke="rgba(45,49,66,0.30)" stroke-width="0.8"/>
+      <text x="364" y="660" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">DEPLOYED ARTIFACT</text>
+
+      <rect x="516" y="650" width="20" height="12" rx="2" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="0.8"/>
+      <text x="544" y="660" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">PERSISTENT FILE</text>
+
+      <line x1="676" y1="656" x2="712" y2="656" stroke="#eb6c36" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+      <text x="728" y="660" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">EVENT CONTRACT PATH</text>
+
+      <line x1="900" y1="656" x2="936" y2="656" stroke="#2e5aa8" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <text x="952" y="660" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">LOOPBACK HTTP</text>
+
+      <text x="48" y="692" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace">THIS IS THE ONLY TOPOLOGY THE REPOSITORIES SUPPORT. THERE IS NO SERVER TIER, NO CONTAINER, NO ORCHESTRATOR AND NO NETWORK HOP BETWEEN THE AGENT AND THE ENGINE.</text>
+      <text x="48" y="708" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace">THE ENGINE OWNS THE OFFICER PROCESS IN --OFFICER MODE AND STOPS IT WITH CTRL_BREAK; THE ALTERNATIVE IS A CAPTURED NDJSON FILE READ WITH --OFFICER-NDJSON.</text>
+      <text x="48" y="724" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace">THE CONSOLE BINDS 127.0.0.1 BY DEFAULT AND HAS NO AUTHENTICATION; WIDENING --HOST WOULD EXPOSE UNAUTHENTICATED ALERT DATA AND IS NOT PART OF THIS TOPOLOGY.</text>
+      <text x="48" y="740" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace">BUILD VALIDATED ON X64-WINDOWS (MSVC 14.44, VCPKG). THE ARM64 TRIPLET BUILDS FROM THE SAME SOURCE; ONLY THE X64 PATH IS SHOWN.</text>
+    </svg>
+  </div>
+</body>
+</html>

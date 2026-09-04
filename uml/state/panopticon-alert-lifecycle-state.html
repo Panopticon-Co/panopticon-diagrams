@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panopticon — Alert Lifecycle State Machine</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper: #f5f5f5; --color-ink: #2d3142; --color-muted: #4f5d75; --color-accent: #eb6c36;
+      --font-sans: 'Geist', system-ui, sans-serif;
+      --font-serif: 'Instrument Serif', serif;
+      --font-mono: 'Geist Mono', ui-monospace, monospace;
+    }
+    body { font-family: var(--font-sans); background: var(--color-paper); color: var(--color-ink);
+           min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 3rem 2rem; }
+    .frame { max-width: 1320px; width: 100%; }
+    .eyebrow { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500; letter-spacing: 0.18em;
+               text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
+    h1 { font-family: var(--font-serif); font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem); font-weight: 400;
+         letter-spacing: -0.02em; line-height: 1.15; color: var(--color-ink); margin-bottom: 1.5rem; }
+    svg { width: 100%; min-width: 900px; display: block; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">UML State Machine &middot; The states the spool really persists</p>
+    <h1>An alert has a delivery lifecycle, not a triage lifecycle</h1>
+
+    <svg viewBox="0 0 1200 760" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="state-title state-desc">
+      <title id="state-title">Alert Lifecycle State Machine</title>
+      <desc id="state-desc">UML state machine for a Panopticon alert moving from constructed in memory to pending in the SQLite spool, then to delivered when the append succeeds, to retry waiting during bounded backoff, or to dead when attempts are exhausted, with a manual requeue transition back to pending.</desc>
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f5f5f5"/>
+
+      <!-- ================= TRANSITIONS ================= -->
+      <line x1="116" y1="240" x2="156" y2="240" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="360" y1="240" x2="456" y2="240" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <path d="M 260,200 V 128 Q 260,120 268,120 H 972 Q 980,120 980,128 V 132"
+            fill="none" stroke="#4f5d75" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <path d="M 660,224 H 772 Q 780,224 780,216 V 184 Q 780,176 788,176 H 876"
+            fill="none" stroke="#eb6c36" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+      <path d="M 660,256 H 812 Q 820,256 820,264 V 376 Q 820,384 828,384 H 876"
+            fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="520" y1="280" x2="520" y2="436" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="600" y1="440" x2="600" y2="284" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <path d="M 980,424 V 552 Q 980,560 972,560 H 448 Q 440,560 440,552 V 272 Q 440,264 448,264 H 456"
+            fill="none" stroke="#4f5d75" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <line x1="1080" y1="176" x2="1120" y2="176" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+      <!-- ================= TRANSITION LABELS ================= -->
+      <rect x="164" y="212" width="192" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="260" y="221" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">/ from_detection_result()</text>
+
+      <rect x="364" y="204" width="92" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="410" y="213" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">persist()</text>
+      <rect x="364" y="220" width="92" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="410" y="229" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">[new]</text>
+
+      <rect x="520" y="96" width="220" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="630" y="105" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">[duplicate and already delivered]</text>
+
+      <rect x="700" y="188" width="120" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="704" y="197" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">write ok /</text>
+      <rect x="700" y="204" width="120" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="704" y="213" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">mark_delivered()</text>
+
+      <rect x="676" y="288" width="180" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="680" y="297" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">write raised</text>
+      <rect x="676" y="304" width="180" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="680" y="313" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">[attempts &#8805; max] / dead</text>
+
+      <rect x="304" y="330" width="204" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="308" y="339" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">write raised [attempts &lt; max]</text>
+      <rect x="304" y="346" width="204" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="308" y="355" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">/ mark_failed = retry</text>
+
+      <rect x="612" y="330" width="192" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="616" y="339" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">backoff elapsed /</text>
+      <rect x="612" y="346" width="192" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="616" y="355" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">claim_deliverable()</text>
+
+      <rect x="604" y="532" width="212" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="710" y="541" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">requeue_dead() &#8212; MANUAL</text>
+
+      <!-- ================= PSEUDOSTATES ================= -->
+      <circle cx="100" cy="240" r="12" fill="#2d3142"/>
+      <circle cx="1136" cy="176" r="16" fill="#f5f5f5" stroke="#2d3142" stroke-width="1.2"/>
+      <circle cx="1136" cy="176" r="9" fill="#2d3142"/>
+
+      <!-- ================= STATES ================= -->
+      <rect x="160" y="200" width="200" height="80" rx="16" fill="#f5f5f5"/>
+      <rect x="160" y="200" width="200" height="80" rx="16" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="260" y="228" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Constructed</text>
+      <line x1="176" y1="238" x2="344" y2="238" stroke="rgba(45,49,66,0.20)" stroke-width="0.8"/>
+      <text x="176" y="256" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace">in memory only</text>
+      <text x="176" y="270" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace">not yet durable</text>
+
+      <rect x="456" y="200" width="204" height="80" rx="16" fill="#f5f5f5"/>
+      <rect x="456" y="200" width="204" height="80" rx="16" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <text x="558" y="228" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Pending</text>
+      <line x1="472" y1="238" x2="644" y2="238" stroke="rgba(235,108,54,0.35)" stroke-width="0.8"/>
+      <text x="472" y="256" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace">status = pending</text>
+      <text x="472" y="270" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace">payload retained</text>
+
+      <rect x="460" y="440" width="200" height="80" rx="16" fill="#f5f5f5"/>
+      <rect x="460" y="440" width="200" height="80" rx="16" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="560" y="468" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">RetryWaiting</text>
+      <line x1="476" y1="478" x2="644" y2="478" stroke="rgba(45,49,66,0.20)" stroke-width="0.8"/>
+      <text x="476" y="496" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace">next_attempt_at &gt; now</text>
+      <text x="476" y="510" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace">bounded backoff</text>
+
+      <rect x="880" y="136" width="200" height="80" rx="16" fill="#f5f5f5"/>
+      <rect x="880" y="136" width="200" height="80" rx="16" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="980" y="164" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Delivered</text>
+      <line x1="896" y1="174" x2="1064" y2="174" stroke="rgba(45,49,66,0.20)" stroke-width="0.8"/>
+      <text x="896" y="192" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace">payload NULLed</text>
+      <text x="896" y="206" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace">kept as dedup tombstone</text>
+
+      <rect x="880" y="344" width="200" height="80" rx="16" fill="#f5f5f5"/>
+      <rect x="880" y="344" width="200" height="80" rx="16" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="980" y="372" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Dead</text>
+      <line x1="896" y1="382" x2="1064" y2="382" stroke="rgba(45,49,66,0.20)" stroke-width="0.8"/>
+      <text x="896" y="400" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace">payload kept</text>
+      <text x="896" y="414" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace">last_error kept</text>
+
+      <!-- ================= RESTART NOTE ================= -->
+      <rect x="160" y="600" width="440" height="72" rx="8" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="4,3"/>
+      <rect x="180" y="594" width="112" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="236" y="603" fill="rgba(45,49,66,0.45)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">RESTART BEHAVIOUR</text>
+      <text x="180" y="628" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace">On start, recover() re-offers every Pending alert</text>
+      <text x="180" y="644" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace">before the live stream is read. Claiming never</text>
+      <text x="180" y="660" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace">mutates a row, so a crash simply re-offers it.</text>
+
+      <!-- ================= LEGEND ================= -->
+      <line x1="40" y1="700" x2="1160" y2="700" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <text x="40" y="720" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGEND</text>
+
+      <circle cx="128" cy="716" r="7" fill="#2d3142"/>
+      <text x="144" y="720" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">INITIAL</text>
+
+      <circle cx="228" cy="716" r="8" fill="#f5f5f5" stroke="#2d3142" stroke-width="1.2"/>
+      <circle cx="228" cy="716" r="4" fill="#2d3142"/>
+      <text x="244" y="720" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">FINAL</text>
+
+      <line x1="316" y1="716" x2="352" y2="716" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <text x="368" y="720" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">AUTOMATIC TRANSITION</text>
+
+      <line x1="536" y1="716" x2="572" y2="716" stroke="#4f5d75" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <text x="588" y="720" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">CONDITIONAL OR OPERATOR-DRIVEN</text>
+
+      <rect x="820" y="708" width="24" height="16" rx="8" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <text x="856" y="720" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">STATE EVERY ALERT PASSES THROUGH</text>
+
+      <text x="40" y="748" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace">THESE ARE THE ONLY PERSISTED STATES: SPOOL_META SCHEMA 1, ALERTS.STATUS IN (PENDING, DELIVERED, DEAD). RETRYWAITING IS PENDING WITH A FUTURE NEXT_ATTEMPT_AT. PANOPTICON HAS NO ACKNOWLEDGED, INVESTIGATING OR CLOSED STATE.</text>
+    </svg>
+  </div>
+</body>
+</html>

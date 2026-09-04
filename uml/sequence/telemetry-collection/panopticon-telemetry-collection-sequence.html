@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panopticon — Telemetry Collection Sequence</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper: #f5f5f5; --color-ink: #2d3142; --color-muted: #4f5d75; --color-accent: #eb6c36;
+      --font-sans: 'Geist', system-ui, sans-serif;
+      --font-serif: 'Instrument Serif', serif;
+      --font-mono: 'Geist Mono', ui-monospace, monospace;
+    }
+    body { font-family: var(--font-sans); background: var(--color-paper); color: var(--color-ink);
+           min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 3rem 2rem; }
+    .frame { max-width: 1400px; width: 100%; }
+    .eyebrow { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500; letter-spacing: 0.18em;
+               text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
+    h1 { font-family: var(--font-serif); font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem); font-weight: 400;
+         letter-spacing: -0.02em; line-height: 1.15; color: var(--color-ink); margin-bottom: 1.5rem; }
+    svg { width: 100%; min-width: 900px; display: block; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">UML Sequence &middot; One Sysmon event, end to queue</p>
+    <h1>The life of a single telemetry event</h1>
+
+    <svg viewBox="0 0 1280 820" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="telemseq-title telemseq-desc">
+      <title id="telemseq-title">Telemetry Collection Sequence</title>
+      <desc id="telemseq-desc">UML sequence diagram tracing one Sysmon event from the Windows push callback through the Officer collector and its inline enrich, normalize and serialize pipeline, out as a Schema 0.3 NDJSON line on standard output, into the eyedetect live telemetry stream and its bounded event queue, including the backpressure case where the queue is full.</desc>
+      <defs>
+        <marker id="arrow-filled" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/></marker>
+        <marker id="arrow-async" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polyline points="0 0, 8 3, 0 6" fill="none" stroke="#4f5d75" stroke-width="1.2"/>
+        </marker>
+        <marker id="arrow-async-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polyline points="0 0, 8 3, 0 6" fill="none" stroke="#eb6c36" stroke-width="1.2"/>
+        </marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f5f5f5"/>
+
+      <!-- ================= LIFELINES ================= -->
+      <line x1="140" y1="152" x2="140" y2="700" stroke="rgba(45,49,66,0.30)" stroke-width="1" stroke-dasharray="4,4"/>
+      <line x1="380" y1="152" x2="380" y2="700" stroke="rgba(45,49,66,0.30)" stroke-width="1" stroke-dasharray="4,4"/>
+      <line x1="620" y1="152" x2="620" y2="700" stroke="rgba(45,49,66,0.30)" stroke-width="1" stroke-dasharray="4,4"/>
+      <line x1="880" y1="152" x2="880" y2="700" stroke="rgba(45,49,66,0.30)" stroke-width="1" stroke-dasharray="4,4"/>
+      <line x1="1120" y1="152" x2="1120" y2="700" stroke="rgba(45,49,66,0.30)" stroke-width="1" stroke-dasharray="4,4"/>
+
+      <!-- process boundary drawn here so label masks occlude it where they cross -->
+      <line x1="752" y1="168" x2="752" y2="700" stroke="rgba(235,108,54,0.45)" stroke-width="1" stroke-dasharray="6,5"/>
+
+      <!-- ================= OPT FRAGMENT (backpressure) ================= -->
+      <rect x="840" y="524" width="320" height="136" rx="4" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.22)" stroke-width="1"/>
+      <rect x="840" y="524" width="40" height="16" rx="2" fill="#f5f5f5" stroke="rgba(45,49,66,0.22)" stroke-width="1"/>
+      <text x="860" y="536" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">OPT</text>
+      <text x="892" y="536" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.04em">[queue full and overflow = block]</text>
+
+      <!-- ================= ACTIVATION BARS ================= -->
+      <rect x="376" y="200" width="8" height="112" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="0.8"/>
+      <rect x="616" y="304" width="8" height="152" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="0.8"/>
+      <rect x="876" y="452" width="8" height="188" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="0.8"/>
+      <rect x="1116" y="584" width="8" height="44" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="0.8"/>
+
+      <!-- ================= MESSAGES ================= -->
+      <!-- M1 async push from Windows -->
+      <line x1="140" y1="200" x2="372" y2="200" stroke="#4f5d75" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow-async)"/>
+      <!-- M2 self: decode -->
+      <path d="M 384,240 H 424 Q 432,240 432,248 V 264 Q 432,272 424,272 H 388"
+            fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow-filled)"/>
+      <!-- M3 sync sink call -->
+      <line x1="384" y1="304" x2="612" y2="304" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow-filled)"/>
+      <!-- M4 self: enrich -->
+      <path d="M 624,336 H 664 Q 672,336 672,344 V 360 Q 672,368 664,368 H 628"
+            fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow-filled)"/>
+      <!-- M5 self: derive identity -->
+      <path d="M 624,392 H 664 Q 672,392 672,400 V 416 Q 672,424 664,424 H 628"
+            fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow-filled)"/>
+      <!-- M6 headline: NDJSON line crosses the process boundary -->
+      <line x1="624" y1="452" x2="872" y2="452" stroke="#eb6c36" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow-async-accent)"/>
+      <!-- M7 self: transform -->
+      <path d="M 884,484 H 924 Q 932,484 932,492 V 508 Q 932,516 924,516 H 888"
+            fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow-filled)"/>
+      <!-- M8 sync put -->
+      <line x1="884" y1="584" x2="1112" y2="584" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow-filled)"/>
+      <!-- M9 return: producer released -->
+      <line x1="1112" y1="628" x2="888" y2="628" stroke="#4f5d75" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow-filled)"/>
+
+      <!-- ================= MESSAGE LABELS ================= -->
+      <rect x="164" y="176" width="196" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="262" y="185" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">EVTSUBSCRIBE CALLBACK (XML)</text>
+
+      <rect x="440" y="244" width="192" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="444" y="253" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">decode_xml() : RawEvent</text>
+      <rect x="440" y="260" width="192" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="444" y="269" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">EID 1 / 3 / 7 / 11-14 / 23 / 26</text>
+
+      <rect x="408" y="280" width="180" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="498" y="289" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">RawEventSink(RawEvent)</text>
+
+      <rect x="680" y="340" width="216" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="684" y="349" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">enrich: file_name, populate_user</text>
+      <rect x="680" y="356" width="216" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="684" y="365" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">normalize to PanopticonEvent</text>
+
+      <rect x="680" y="388" width="216" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="684" y="397" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">derive proc_ and evt_ identity</text>
+      <rect x="680" y="404" width="216" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="684" y="413" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">CNG SHA-256, then serialize</text>
+
+      <rect x="632" y="432" width="232" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="748" y="441" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">ONE NDJSON LINE ON STDOUT (0.3)</text>
+
+      <rect x="940" y="488" width="196" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="944" y="497" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">transform_officer_event()</text>
+      <rect x="940" y="504" width="196" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="944" y="513" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">to engine-internal event dict</text>
+
+      <rect x="908" y="564" width="180" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="998" y="573" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">put(event) BLOCKS</text>
+
+      <rect x="908" y="608" width="180" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="998" y="617" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">SPACE AVAILABLE</text>
+
+      <!-- ================= PARTICIPANTS ================= -->
+      <rect x="40" y="88" width="200" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="40" y="88" width="200" height="64" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
+      <text x="140" y="114" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Windows source</text>
+      <text x="140" y="132" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">Sysmon / ETW</text>
+
+      <rect x="280" y="88" width="200" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="280" y="88" width="200" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="380" y="114" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Collector</text>
+      <text x="380" y="132" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">+ decoder</text>
+
+      <rect x="520" y="88" width="200" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="520" y="88" width="200" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="620" y="114" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Officer pipeline</text>
+      <text x="620" y="132" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">normalize + serialize</text>
+
+      <rect x="780" y="88" width="200" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="780" y="88" width="200" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="880" y="114" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">LiveTelemetryStream</text>
+      <text x="880" y="132" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">eyedetect ingestion</text>
+
+      <rect x="1020" y="88" width="200" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="1020" y="88" width="200" height="64" rx="6" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="1"/>
+      <text x="1120" y="114" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">BoundedEventQueue</text>
+      <text x="1120" y="132" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">capacity 1024</text>
+
+      <!-- ================= PROCESS BOUNDARY LABEL ================= -->
+      <rect x="676" y="676" width="152" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="752" y="685" fill="rgba(235,108,54,0.90)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.10em">OS PROCESS BOUNDARY</text>
+
+      <!-- ================= LEGEND ================= -->
+      <line x1="40" y1="724" x2="1240" y2="724" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <text x="40" y="744" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGEND</text>
+
+      <line x1="120" y1="740" x2="156" y2="740" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow-filled)"/>
+      <text x="176" y="744" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">SYNCHRONOUS CALL</text>
+
+      <line x1="336" y1="740" x2="372" y2="740" stroke="#4f5d75" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow-async)"/>
+      <text x="392" y="744" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">ASYNCHRONOUS / ONE-WAY</text>
+
+      <line x1="600" y1="740" x2="636" y2="740" stroke="#4f5d75" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow-filled)"/>
+      <text x="656" y="744" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">RETURN</text>
+
+      <rect x="744" y="734" width="8" height="12" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="0.8"/>
+      <text x="764" y="744" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">ACTIVATION</text>
+
+      <line x1="892" y1="740" x2="928" y2="740" stroke="#eb6c36" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow-async-accent)"/>
+      <text x="948" y="744" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">THE EVENT CONTRACT CROSSING</text>
+
+      <text x="40" y="776" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace">DECODE, ENRICH, NORMALIZE, SERIALIZE AND FLUSH ALL RUN INLINE ON THE ACQUISITION CALLBACK THREAD. OFFICER HAS NO QUEUE OF ITS OWN; THE ONLY QUEUE IS THE CONSUMER-SIDE ONE.</text>
+      <text x="40" y="792" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace">THE ETW PATH IS THE SAME SHAPE WITH A TDH-DECODED EVENT_RECORD INSTEAD OF RENDERED XML, AND WITHOUT COMMAND LINE OR OWNER SID.</text>
+    </svg>
+  </div>
+</body>
+</html>

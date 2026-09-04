@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1300 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="datamodel-title datamodel-desc">
+      <title id="datamodel-title">Panopticon Event Data Model</title>
+      <desc id="datamodel-desc">Entity relationship view of Panopticon Schema 0.3 showing the event root with its six required blocks for event, source, agent and host, user and process, plus one optional telemetry family block that must match the event category.</desc>
+      <defs><style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap');</style>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f5f5f5"/>
+
+      <!-- ================= RELATIONSHIPS ================= -->
+      <path d="M 348,232 H 386 Q 394,232 394,224 V 188 Q 394,180 402,180 H 436" fill="none" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+      <path d="M 348,260 H 402 Q 410,260 410,268 V 342 Q 410,350 418,350 H 436" fill="none" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+      <path d="M 348,288 H 370 Q 378,288 378,296 V 552 Q 378,560 386,560 H 436" fill="none" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+      <path d="M 348,316 H 386 Q 394,316 394,324 V 432 Q 394,440 402,440 H 856" fill="none" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+      <path d="M 348,344 H 354 Q 362,344 362,336 V 88 Q 362,80 370,80 H 992 Q 1000,80 1000,88 V 108" fill="none" stroke="#eb6c36" stroke-width="1" marker-end="url(#arrow-accent)"/>
+      <path d="M 348,372 H 418 Q 426,372 426,380 V 672 Q 426,680 434,680 H 856" fill="none" stroke="#4f5d75" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+
+      <!-- ================= CARDINALITY ================= -->
+      <rect x="356" y="216" width="16" height="12" rx="2" fill="#f5f5f5"/><text x="364" y="225" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">1</text>
+      <rect x="412" y="164" width="16" height="12" rx="2" fill="#f5f5f5"/><text x="420" y="173" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">1</text>
+      <rect x="420" y="334" width="16" height="12" rx="2" fill="#f5f5f5"/><text x="428" y="343" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">1</text>
+      <rect x="392" y="544" width="16" height="12" rx="2" fill="#f5f5f5"/><text x="400" y="553" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">1</text>
+      <rect x="820" y="424" width="16" height="12" rx="2" fill="#f5f5f5"/><text x="828" y="433" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">1</text>
+      <rect x="1008" y="88" width="16" height="12" rx="2" fill="#f5f5f5"/><text x="1016" y="97" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">1</text>
+      <rect x="800" y="658" width="32" height="12" rx="2" fill="#f5f5f5"/><text x="816" y="667" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">0..1</text>
+
+      <rect x="444" y="658" width="204" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="448" y="667" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">REQUIRED WHEN CATEGORY &#8800; PROCESS</text>
+
+      <!-- ================= ROOT ENTITY (focal) ================= -->
+      <rect x="48" y="200" width="300" height="180" rx="6" fill="#f5f5f5"/>
+      <rect x="48" y="200" width="300" height="180" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <text x="64" y="224" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif">PanopticonEvent</text>
+      <line x1="48" y1="236" x2="348" y2="236" stroke="#eb6c36" stroke-width="0.8"/>
+      <text x="64" y="256" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">schema_version</text>
+      <text x="332" y="256" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">&quot;0.2&quot; | &quot;0.3&quot;</text>
+      <text x="64" y="274" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">additionalProperties</text>
+      <text x="332" y="274" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">false</text>
+      <line x1="64" y1="288" x2="332" y2="288" stroke="rgba(235,108,54,0.25)" stroke-width="0.8"/>
+      <text x="64" y="308" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace">6 required blocks below,</text>
+      <text x="64" y="324" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace">plus one optional family block.</text>
+      <text x="64" y="348" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace">JSON Schema draft 2020-12,</text>
+      <text x="64" y="364" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace">strict at every level.</text>
+
+      <!-- ================= event ================= -->
+      <rect x="436" y="112" width="344" height="124" rx="6" fill="#f5f5f5"/>
+      <rect x="436" y="112" width="344" height="124" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="452" y="136" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif">event</text>
+      <line x1="436" y1="148" x2="780" y2="148" stroke="rgba(45,49,66,0.30)" stroke-width="0.8"/>
+      <text x="452" y="168" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">id</text>
+      <text x="764" y="168" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">evt_&lt;64 hex&gt;</text>
+      <text x="452" y="186" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">category</text>
+      <text x="764" y="186" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">5-value enum</text>
+      <text x="452" y="204" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">type</text>
+      <text x="764" y="204" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">per-category vocabulary</text>
+      <text x="452" y="222" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">timestamp</text>
+      <text x="764" y="222" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">ISO-8601 ms, Z</text>
+
+      <!-- ================= source ================= -->
+      <rect x="436" y="288" width="344" height="124" rx="6" fill="#f5f5f5"/>
+      <rect x="436" y="288" width="344" height="124" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="452" y="312" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif">source</text>
+      <line x1="436" y1="324" x2="780" y2="324" stroke="rgba(45,49,66,0.30)" stroke-width="0.8"/>
+      <text x="452" y="344" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">kind</text>
+      <text x="764" y="344" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">etw | sysmon | windows_event_log</text>
+      <text x="452" y="362" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">provider</text>
+      <text x="764" y="362" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">string</text>
+      <text x="452" y="380" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">channel</text>
+      <text x="764" y="380" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">string | null</text>
+      <text x="452" y="398" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">record_id</text>
+      <text x="764" y="398" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">integer &#8805; 0 | null</text>
+
+      <!-- ================= agent and host ================= -->
+      <rect x="436" y="480" width="344" height="160" rx="6" fill="#f5f5f5"/>
+      <rect x="436" y="480" width="344" height="160" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="452" y="504" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif">agent &#183; host</text>
+      <line x1="436" y1="516" x2="780" y2="516" stroke="rgba(45,49,66,0.30)" stroke-width="0.8"/>
+      <text x="452" y="536" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">agent.id</text>
+      <text x="764" y="536" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">officer-&lt;MachineGuid&gt;</text>
+      <text x="452" y="554" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">agent.version</text>
+      <text x="764" y="554" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">&quot;0.3.0&quot;</text>
+      <text x="452" y="572" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">host.id</text>
+      <text x="764" y="572" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">MachineGuid</text>
+      <text x="452" y="590" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">host.hostname</text>
+      <text x="764" y="590" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">DNS host name</text>
+      <text x="452" y="608" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">host.os.name</text>
+      <text x="764" y="608" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">registry ProductName</text>
+      <text x="452" y="626" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">host.os.build</text>
+      <text x="764" y="626" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">CurrentBuildNumber</text>
+
+      <!-- ================= process ================= -->
+      <rect x="856" y="108" width="384" height="184" rx="6" fill="#f5f5f5"/>
+      <rect x="856" y="108" width="384" height="184" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="872" y="132" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif">process</text>
+      <text x="1224" y="132" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" text-anchor="end" letter-spacing="0.06em">ALWAYS PRESENT</text>
+      <line x1="856" y1="144" x2="1240" y2="144" stroke="rgba(45,49,66,0.30)" stroke-width="0.8"/>
+      <text x="872" y="164" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">entity_id</text>
+      <text x="1224" y="164" fill="#eb6c36" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">proc_&lt;64 hex&gt;</text>
+      <text x="872" y="182" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">pid</text>
+      <text x="1224" y="182" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">integer 0 .. 4294967295</text>
+      <text x="872" y="200" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">name</text>
+      <text x="1224" y="200" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">string | null</text>
+      <text x="872" y="218" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">executable</text>
+      <text x="1224" y="218" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">string | null</text>
+      <text x="872" y="236" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">command_line</text>
+      <text x="1224" y="236" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">string | null &#8212; ETW never sets it</text>
+      <text x="872" y="254" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">parent</text>
+      <text x="1224" y="254" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">entity_id, pid, name &#8212; all nullable</text>
+      <text x="872" y="272" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">hash.sha256</text>
+      <text x="1224" y="272" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">64 hex | null</text>
+
+      <!-- ================= user ================= -->
+      <rect x="856" y="380" width="384" height="104" rx="6" fill="#f5f5f5"/>
+      <rect x="856" y="380" width="384" height="104" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="872" y="404" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif">user</text>
+      <line x1="856" y1="416" x2="1240" y2="416" stroke="rgba(45,49,66,0.30)" stroke-width="0.8"/>
+      <text x="872" y="436" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">name</text>
+      <text x="1224" y="436" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">string | null</text>
+      <text x="872" y="454" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">domain</text>
+      <text x="1224" y="454" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">string | null</text>
+      <text x="872" y="472" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">sid</text>
+      <text x="1224" y="472" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">string | null</text>
+
+      <!-- ================= family block ================= -->
+      <rect x="856" y="536" width="384" height="224" rx="6" fill="#f5f5f5"/>
+      <rect x="856" y="536" width="384" height="224" rx="6" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.35)" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="872" y="560" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif">family block</text>
+      <text x="1224" y="560" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="end" letter-spacing="0.06em">EXACTLY ONE, MATCHING CATEGORY</text>
+      <line x1="856" y1="572" x2="1240" y2="572" stroke="rgba(45,49,66,0.25)" stroke-width="0.8"/>
+
+      <text x="872" y="592" fill="#2d3142" font-size="9" font-weight="600" font-family="'Geist Mono', monospace">network</text>
+      <text x="872" y="606" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace">direction, protocol, source_ip/port,</text>
+      <text x="872" y="620" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace">destination_ip/port, destination_hostname</text>
+
+      <text x="872" y="642" fill="#2d3142" font-size="9" font-weight="600" font-family="'Geist Mono', monospace">file</text>
+      <text x="872" y="656" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace">operation, path, target_path,</text>
+      <text x="872" y="670" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace">previous_path, hash.sha256</text>
+
+      <text x="872" y="692" fill="#2d3142" font-size="9" font-weight="600" font-family="'Geist Mono', monospace">registry</text>
+      <text x="872" y="706" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace">operation, key_path, value_name,</text>
+      <text x="872" y="720" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace">value_type, value_data (always null)</text>
+
+      <text x="872" y="742" fill="#2d3142" font-size="9" font-weight="600" font-family="'Geist Mono', monospace">image_load</text>
+      <text x="1224" y="742" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">path, is_signed, signature_status, hash</text>
+
+      <!-- ================= LEGEND ================= -->
+      <line x1="48" y1="800" x2="1252" y2="800" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <text x="48" y="820" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGEND</text>
+
+      <rect x="128" y="810" width="20" height="12" rx="2" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <text x="156" y="820" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">EVENT ROOT</text>
+
+      <rect x="272" y="810" width="20" height="12" rx="2" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="300" y="820" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">REQUIRED BLOCK</text>
+
+      <rect x="440" y="810" width="20" height="12" rx="2" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.35)" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="468" y="820" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">CONDITIONAL BLOCK</text>
+
+      <line x1="632" y1="816" x2="668" y2="816" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+      <text x="684" y="820" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">CONTAINS (1 TO 1)</text>
+
+      <line x1="840" y1="816" x2="876" y2="816" stroke="#4f5d75" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <text x="892" y="820" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">CONTAINS (0 TO 1)</text>
+
+      <text x="48" y="852" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace">PROCESS.ENTITY_ID IS THE CANONICAL PROCESS IDENTITY: SHA-256 OVER HOST.ID + PID + START TIME IN MILLISECONDS, DOMAIN VERSION PROCESS-ENTITY-V2 (ADR 003).</text>
+      <text x="48" y="868" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace">NON-PROCESS FAMILIES DERIVE THEIR PROCESS-CONTEXT ENTITY_ID FROM HOST + PID + SYSMON PROCESSGUID, SO IT IS NOT GUARANTEED EQUAL TO THE PROCESS-START ENTITY_ID.</text>
+      <text x="48" y="884" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace">THIS IS THE WIRE CONTRACT, NOT A DATABASE SCHEMA. THE ONLY DATABASE IN THE PLATFORM IS THE ALERT SPOOL, WHICH STORES ALERTS AND NEVER TELEMETRY.</text>
+    </svg>

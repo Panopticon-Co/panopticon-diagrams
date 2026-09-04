@@ -1,0 +1,22 @@
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Python (in case _tooling scripts are run in place)
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Playwright (used by export_png.py)
+node_modules/
+
+# Local scratch
+*.tmp
+*.bak

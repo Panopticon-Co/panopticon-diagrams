@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panopticon — UML Use Case</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper: #f5f5f5; --color-ink: #2d3142; --color-muted: #4f5d75; --color-accent: #eb6c36;
+      --font-sans: 'Geist', system-ui, sans-serif;
+      --font-serif: 'Instrument Serif', serif;
+      --font-mono: 'Geist Mono', ui-monospace, monospace;
+    }
+    body { font-family: var(--font-sans); background: var(--color-paper); color: var(--color-ink);
+           min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 3rem 2rem; }
+    .frame { max-width: 1320px; width: 100%; }
+    .eyebrow { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500; letter-spacing: 0.18em;
+               text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
+    h1 { font-family: var(--font-serif); font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem); font-weight: 400;
+         letter-spacing: -0.02em; line-height: 1.15; color: var(--color-ink); margin-bottom: 1.5rem; }
+    svg { width: 100%; min-width: 900px; display: block; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">UML Use Case &middot; Implemented capabilities only</p>
+    <h1>What Panopticon actually lets each role do</h1>
+
+    <svg viewBox="0 0 1200 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="usecase-title usecase-desc">
+      <title id="usecase-title">Panopticon Use Case Diagram</title>
+      <desc id="usecase-desc">UML use case diagram with four actors, detection engineer, security administrator, security analyst and the Officer agent, associated with seven implemented use cases inside the Panopticon system boundary, including two include dependencies and one conditional extend dependency for durable alert persistence.</desc>
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/></marker>
+        <marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2e5aa8"/></marker>
+        <marker id="arrow-open" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+          <path d="M 0,0 L 9,4 L 0,8" fill="none" stroke="#4f5d75" stroke-width="1"/>
+        </marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f5f5f5"/>
+
+      <!-- ============ SYSTEM BOUNDARY (painted first) ============ -->
+      <rect x="400" y="88" width="440" height="704" rx="8" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
+      <text x="620" y="118" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Panopticon</text>
+
+      <!-- ============ ASSOCIATIONS (solid, no arrowheads) ============ -->
+      <path d="M 184,232 H 336 Q 344,232 344,224 V 160 Q 344,152 352,152 H 484" fill="none" stroke="#4f5d75" stroke-width="1"/>
+      <line x1="184" y1="248" x2="484" y2="248" stroke="#4f5d75" stroke-width="1"/>
+      <path d="M 184,264 H 336 Q 344,264 344,272 V 336 Q 344,344 352,344 H 484" fill="none" stroke="#4f5d75" stroke-width="1"/>
+      <line x1="184" y1="440" x2="484" y2="440" stroke="#4f5d75" stroke-width="1"/>
+      <line x1="184" y1="728" x2="484" y2="728" stroke="#4f5d75" stroke-width="1"/>
+      <line x1="756" y1="536" x2="976" y2="536" stroke="#4f5d75" stroke-width="1"/>
+
+      <!-- ============ DEPENDENCIES (dashed, open arrowhead) ============ -->
+      <line x1="620" y1="376" x2="620" y2="404" stroke="#4f5d75" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#arrow-open)"/>
+      <line x1="620" y1="472" x2="620" y2="500" stroke="#4f5d75" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#arrow-open)"/>
+      <path d="M 756,632 H 792 Q 800,632 800,624 V 544 a 8,8 0 0,1 0,-16 V 452 Q 800,444 792,444 H 756"
+            fill="none" stroke="#4f5d75" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#arrow-open)"/>
+
+      <!-- ============ DEPENDENCY LABELS ============ -->
+      <rect x="632" y="382" width="64" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="664" y="391" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">&#171;include&#187;</text>
+
+      <rect x="632" y="478" width="64" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="664" y="487" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">&#171;include&#187;</text>
+
+      <rect x="816" y="656" width="60" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="846" y="665" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">&#171;extend&#187;</text>
+      <rect x="816" y="674" width="76" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="854" y="683" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">[--reliable]</text>
+
+      <!-- ============ USE CASES ============ -->
+      <ellipse cx="620" cy="152" rx="136" ry="32" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="620" y="148" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Author detection rule</text>
+      <text x="620" y="164" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">YAML under rules/</text>
+
+      <ellipse cx="620" cy="248" rx="136" ry="32" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="620" y="244" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Review MITRE coverage</text>
+      <text x="620" y="260" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">--mitre-matrix</text>
+
+      <ellipse cx="620" cy="344" rx="136" ry="32" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="620" y="340" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Validate rule on telemetry</text>
+      <text x="620" y="356" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">captured NDJSON</text>
+
+      <ellipse cx="620" cy="440" rx="136" ry="32" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <text x="620" y="436" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Run detection pipeline</text>
+      <text x="620" y="452" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">86 rules, stages A-G</text>
+
+      <ellipse cx="620" cy="536" rx="136" ry="32" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="620" y="532" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Collect endpoint telemetry</text>
+      <text x="620" y="548" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">ETW + Sysmon, elevated</text>
+
+      <ellipse cx="620" cy="632" rx="136" ry="32" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="620" y="628" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Persist and recover alerts</text>
+      <text x="620" y="644" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">SQLite spool + retry</text>
+
+      <ellipse cx="620" cy="728" rx="136" ry="32" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="620" y="724" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">View alerts and evidence</text>
+      <text x="620" y="740" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">read-only, 3 s polling</text>
+
+      <!-- ============ ACTORS ============ -->
+      <circle cx="140" cy="224" r="8" fill="none" stroke="#2d3142" stroke-width="1.2"/>
+      <line x1="140" y1="232" x2="140" y2="252" stroke="#2d3142" stroke-width="1.2"/>
+      <line x1="128" y1="240" x2="152" y2="240" stroke="#2d3142" stroke-width="1.2"/>
+      <line x1="140" y1="252" x2="130" y2="268" stroke="#2d3142" stroke-width="1.2"/>
+      <line x1="140" y1="252" x2="150" y2="268" stroke="#2d3142" stroke-width="1.2"/>
+      <text x="140" y="288" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Detection Engineer</text>
+      <text x="140" y="304" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">rule author</text>
+
+      <circle cx="140" cy="416" r="8" fill="none" stroke="#2d3142" stroke-width="1.2"/>
+      <line x1="140" y1="424" x2="140" y2="444" stroke="#2d3142" stroke-width="1.2"/>
+      <line x1="128" y1="432" x2="152" y2="432" stroke="#2d3142" stroke-width="1.2"/>
+      <line x1="140" y1="444" x2="130" y2="460" stroke="#2d3142" stroke-width="1.2"/>
+      <line x1="140" y1="444" x2="150" y2="460" stroke="#2d3142" stroke-width="1.2"/>
+      <text x="140" y="480" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Security Admin</text>
+      <text x="140" y="496" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">runs elevated</text>
+
+      <circle cx="140" cy="704" r="8" fill="none" stroke="#2d3142" stroke-width="1.2"/>
+      <line x1="140" y1="712" x2="140" y2="732" stroke="#2d3142" stroke-width="1.2"/>
+      <line x1="128" y1="720" x2="152" y2="720" stroke="#2d3142" stroke-width="1.2"/>
+      <line x1="140" y1="732" x2="130" y2="748" stroke="#2d3142" stroke-width="1.2"/>
+      <line x1="140" y1="732" x2="150" y2="748" stroke="#2d3142" stroke-width="1.2"/>
+      <text x="140" y="768" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Security Analyst</text>
+      <text x="140" y="784" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">read-only</text>
+
+      <circle cx="1032" cy="512" r="8" fill="none" stroke="#4f5d75" stroke-width="1.2"/>
+      <line x1="1032" y1="520" x2="1032" y2="540" stroke="#4f5d75" stroke-width="1.2"/>
+      <line x1="1020" y1="528" x2="1044" y2="528" stroke="#4f5d75" stroke-width="1.2"/>
+      <line x1="1032" y1="540" x2="1022" y2="556" stroke="#4f5d75" stroke-width="1.2"/>
+      <line x1="1032" y1="540" x2="1042" y2="556" stroke="#4f5d75" stroke-width="1.2"/>
+      <text x="1032" y="584" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Officer Agent</text>
+      <text x="1032" y="600" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">&#171;system actor&#187;</text>
+
+      <!-- ============ LEGEND ============ -->
+      <line x1="56" y1="828" x2="1144" y2="828" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <text x="56" y="848" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGEND</text>
+
+      <line x1="136" y1="844" x2="172" y2="844" stroke="#4f5d75" stroke-width="1"/>
+      <text x="180" y="848" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">ASSOCIATION</text>
+
+      <line x1="300" y1="844" x2="332" y2="844" stroke="#4f5d75" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#arrow-open)"/>
+      <text x="352" y="848" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">INCLUDE / EXTEND DEPENDENCY</text>
+
+      <ellipse cx="616" cy="844" rx="18" ry="8" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="644" y="848" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">USE CASE</text>
+
+      <ellipse cx="764" cy="844" rx="18" ry="8" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <text x="792" y="848" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">CENTRAL USE CASE</text>
+
+      <text x="56" y="880" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace">NOT MODELLED BECAUSE NOT IMPLEMENTED: ACKNOWLEDGE ALERT, ASSIGN CASE, SEARCH TELEMETRY, VIEW PROCESS TREE IN UI, THREAT HUNT, APPROVE OR EXECUTE RESPONSE, ENROLL ENDPOINT, AUTHENTICATE.</text>
+      <text x="56" y="896" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace">THE ADMINISTRATOR MAY ALSO LAUNCH OFFICER STANDALONE AND CAPTURE ITS NDJSON; THAT PATH FEEDS THE SAME VALIDATE-RULE-ON-TELEMETRY USE CASE.</text>
+    </svg>
+  </div>
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panopticon — Process Entity Relationships</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper: #f5f5f5; --color-ink: #2d3142; --color-muted: #4f5d75; --color-accent: #eb6c36;
+      --font-sans: 'Geist', system-ui, sans-serif;
+      --font-serif: 'Instrument Serif', serif;
+      --font-mono: 'Geist Mono', ui-monospace, monospace;
+    }
+    body { font-family: var(--font-sans); background: var(--color-paper); color: var(--color-ink);
+           min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 3rem 2rem; }
+    .frame { max-width: 1400px; width: 100%; }
+    .eyebrow { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500; letter-spacing: 0.18em;
+               text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
+    h1 { font-family: var(--font-serif); font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem); font-weight: 400;
+         letter-spacing: -0.02em; line-height: 1.15; color: var(--color-ink); margin-bottom: 1.5rem; }
+    svg { width: 100%; min-width: 900px; display: block; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Investigation model &middot; What can be joined to what</p>
+    <h1>How Panopticon correlates a process to everything else</h1>
+
+    <svg viewBox="0 0 1300 880" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="perel-title perel-desc">
+      <title id="perel-title">Process Entity Relationships</title>
+      <desc id="perel-desc">Investigation-oriented entity relationship view centred on the process, showing its host, its user, its parent and child processes through the process tree, the non-process telemetry events that correlate to it only by process id and name within a time window, and the detections and alerts that reference it.</desc>
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f5f5f5"/>
+
+      <!-- ================= RELATIONSHIPS ================= -->
+      <line x1="308" y1="268" x2="416" y2="268" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+      <path d="M 308,460 H 356 Q 364,460 364,452 V 404 Q 364,396 372,396 H 416" fill="none" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+      <path d="M 500,232 V 204 Q 500,196 508,196 H 652 Q 660,196 660,204 V 228" fill="none" stroke="#eb6c36" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+      <line x1="580" y1="432" x2="580" y2="516" stroke="#4f5d75" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <line x1="740" y1="374" x2="856" y2="374" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+      <line x1="1020" y1="232" x2="1020" y2="300" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+      <line x1="1020" y1="444" x2="1020" y2="516" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+      <path d="M 48,236 H 32 Q 24,236 24,244 V 732 Q 24,740 32,740 H 1012 Q 1020,740 1020,732 V 704" fill="none" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+
+      <!-- ================= CARDINALITY AND EDGE LABELS ================= -->
+      <rect x="316" y="248" width="16" height="12" rx="2" fill="#f5f5f5"/><text x="324" y="257" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">1</text>
+      <rect x="388" y="248" width="28" height="12" rx="2" fill="#f5f5f5"/><text x="402" y="257" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">0..*</text>
+
+      <rect x="316" y="440" width="16" height="12" rx="2" fill="#f5f5f5"/><text x="324" y="449" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">1</text>
+      <rect x="384" y="376" width="28" height="12" rx="2" fill="#f5f5f5"/><text x="398" y="385" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">0..*</text>
+
+      <rect x="500" y="172" width="160" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="580" y="181" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">PARENT 0..1 / CHILDREN 0..*</text>
+
+      <rect x="592" y="452" width="216" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="596" y="461" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">WEAK JOIN: PID + NAME + TIME</text>
+      <rect x="592" y="468" width="216" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="596" y="477" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">NOT A SHARED ENTITY_ID</text>
+
+      <rect x="760" y="348" width="76" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="798" y="357" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">0..*</text>
+
+      <rect x="1030" y="252" width="76" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="1034" y="261" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">1 : 0..*</text>
+
+      <rect x="1030" y="470" width="60" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="1034" y="479" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">1 : 1</text>
+
+      <rect x="452" y="722" width="180" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="456" y="731" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">alert.host_id &#8212; 1 : 0..*</text>
+
+      <!-- ================= ENTITIES ================= -->
+      <rect x="48" y="176" width="260" height="120" rx="6" fill="#f5f5f5"/>
+      <rect x="48" y="176" width="260" height="120" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="64" y="200" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif">Host</text>
+      <line x1="48" y1="212" x2="308" y2="212" stroke="rgba(45,49,66,0.30)" stroke-width="0.8"/>
+      <text x="64" y="232" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">host.id</text>
+      <text x="292" y="232" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">MachineGuid</text>
+      <text x="64" y="250" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">host.hostname</text>
+      <text x="64" y="268" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">host.os</text>
+      <text x="292" y="268" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">name + build</text>
+      <text x="64" y="286" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace">one endpoint today</text>
+
+      <rect x="48" y="400" width="260" height="120" rx="6" fill="#f5f5f5"/>
+      <rect x="48" y="400" width="260" height="120" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="64" y="424" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif">User</text>
+      <line x1="48" y1="436" x2="308" y2="436" stroke="rgba(45,49,66,0.30)" stroke-width="0.8"/>
+      <text x="64" y="456" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">user.sid</text>
+      <text x="292" y="456" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">nullable</text>
+      <text x="64" y="474" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">user.name</text>
+      <text x="64" y="492" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">user.domain</text>
+      <text x="64" y="510" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace">engine joins to DOMAIN\name</text>
+
+      <rect x="416" y="232" width="324" height="200" rx="6" fill="#f5f5f5"/>
+      <rect x="416" y="232" width="324" height="200" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <text x="432" y="256" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif">Process</text>
+      <text x="724" y="256" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" text-anchor="end" letter-spacing="0.06em">PIVOT ENTITY</text>
+      <line x1="416" y1="268" x2="740" y2="268" stroke="#eb6c36" stroke-width="0.8"/>
+      <text x="432" y="288" fill="#eb6c36" font-size="9" font-weight="600" font-family="'Geist Mono', monospace">process.entity_id</text>
+      <text x="724" y="288" fill="#eb6c36" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">proc_&lt;64 hex&gt;</text>
+      <text x="432" y="306" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">process.pid</text>
+      <text x="724" y="306" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">reused by Windows</text>
+      <text x="432" y="324" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">process.name, executable</text>
+      <text x="432" y="342" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">process.command_line</text>
+      <text x="432" y="360" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">parent.entity_id</text>
+      <text x="724" y="360" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">null until start time known</text>
+      <line x1="432" y1="374" x2="724" y2="374" stroke="rgba(235,108,54,0.25)" stroke-width="0.8"/>
+      <text x="432" y="394" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace">ProcessTree.nodes_by_guid</text>
+      <text x="724" y="394" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">keyed on entity_id</text>
+      <text x="432" y="412" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace">ProcessTree.active_pids</text>
+      <text x="724" y="412" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">(host_id, pid) to newest</text>
+
+      <rect x="416" y="516" width="324" height="188" rx="6" fill="#f5f5f5"/>
+      <rect x="416" y="516" width="324" height="188" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="432" y="540" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif">Family event</text>
+      <line x1="416" y1="552" x2="740" y2="552" stroke="rgba(45,49,66,0.30)" stroke-width="0.8"/>
+      <text x="432" y="572" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">network.destination_ip / port</text>
+      <text x="432" y="590" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">file.path, file.operation</text>
+      <text x="432" y="608" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">registry.key_path, value_name</text>
+      <text x="432" y="626" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">image.path, image.is_signed</text>
+      <line x1="432" y1="640" x2="724" y2="640" stroke="rgba(45,49,66,0.20)" stroke-width="0.8"/>
+      <text x="432" y="660" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace">process context: pid, name, guid</text>
+      <text x="432" y="678" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace">entity_id derived from ProcessGuid,</text>
+      <text x="432" y="694" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace">so it may differ from the start event</text>
+
+      <rect x="856" y="112" width="324" height="120" rx="6" fill="#f5f5f5"/>
+      <rect x="856" y="112" width="324" height="120" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="872" y="136" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif">Rule</text>
+      <line x1="856" y1="148" x2="1180" y2="148" stroke="rgba(45,49,66,0.30)" stroke-width="0.8"/>
+      <text x="872" y="168" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">rule.id</text>
+      <text x="1164" y="168" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">DET-XXX-NNN</text>
+      <text x="872" y="186" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">event_type</text>
+      <text x="1164" y="186" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">routing key</text>
+      <text x="872" y="204" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">level</text>
+      <text x="1164" y="204" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">0 .. 16</text>
+      <text x="872" y="222" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">mitre</text>
+      <text x="1164" y="222" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">tactic + technique</text>
+
+      <rect x="856" y="300" width="324" height="144" rx="6" fill="#f5f5f5"/>
+      <rect x="856" y="300" width="324" height="144" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="872" y="324" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif">Detection</text>
+      <text x="1164" y="324" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="end" letter-spacing="0.06em">DETECTIONRESULT</text>
+      <line x1="856" y1="336" x2="1180" y2="336" stroke="rgba(45,49,66,0.30)" stroke-width="0.8"/>
+      <text x="872" y="356" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">rule</text>
+      <text x="1164" y="356" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">the matched Rule</text>
+      <text x="872" y="374" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">event</text>
+      <text x="1164" y="374" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">engine event dict</text>
+      <text x="872" y="392" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">matched_evidence</text>
+      <text x="1164" y="392" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">selected fields</text>
+      <text x="872" y="416" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace">in memory only; never persisted</text>
+      <text x="872" y="432" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace">on its own</text>
+
+      <rect x="856" y="516" width="324" height="188" rx="6" fill="#f5f5f5"/>
+      <rect x="856" y="516" width="324" height="188" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="872" y="540" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif">Alert</text>
+      <text x="1164" y="540" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="end" letter-spacing="0.06em">THE ONLY PERSISTED RECORD</text>
+      <line x1="856" y1="552" x2="1180" y2="552" stroke="rgba(45,49,66,0.30)" stroke-width="0.8"/>
+      <text x="872" y="572" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">alert_id</text>
+      <text x="1164" y="572" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">ALT-XXXXXXXX, deterministic</text>
+      <text x="872" y="590" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">host_id</text>
+      <text x="1164" y="590" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">joins back to Host</text>
+      <text x="872" y="608" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">event_id</text>
+      <text x="1164" y="608" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">evt_&lt;64 hex&gt;</text>
+      <text x="872" y="626" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">evidence</text>
+      <text x="1164" y="626" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">rule-selected fields</text>
+      <text x="872" y="644" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">active_response</text>
+      <text x="1164" y="644" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">recommendation | null</text>
+      <line x1="872" y1="658" x2="1164" y2="658" stroke="rgba(45,49,66,0.20)" stroke-width="0.8"/>
+      <text x="872" y="678" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace">carries no process.entity_id field,</text>
+      <text x="872" y="694" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace">so pivoting uses evidence + event_id</text>
+
+      <!-- ================= LEGEND ================= -->
+      <line x1="24" y1="772" x2="1276" y2="772" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <text x="24" y="792" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGEND</text>
+
+      <rect x="104" y="782" width="20" height="12" rx="2" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <text x="132" y="792" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">PIVOT ENTITY</text>
+
+      <line x1="264" y1="788" x2="300" y2="788" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+      <text x="316" y="792" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">STRONG JOIN ON A STABLE IDENTIFIER</text>
+
+      <line x1="596" y1="788" x2="632" y2="788" stroke="#4f5d75" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <text x="648" y="792" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">WEAK JOIN, HEURISTIC ONLY</text>
+
+      <line x1="880" y1="788" x2="916" y2="788" stroke="#eb6c36" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+      <text x="932" y="792" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">PROCESS TREE ANCESTRY</text>
+
+      <text x="24" y="824" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace">PROCESS.ENTITY_ID IS PID-REUSE SAFE BECAUSE IT HASHES THE START TIME. ACTIVE_PIDS EXISTS SO A LATE EVENT CARRYING ONLY A PID STILL RESOLVES TO THE NEWEST PROCESS.</text>
+      <text x="24" y="840" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace">THE DASHED EDGE IS THE REAL LIMITATION: A NETWORK, FILE, REGISTRY OR IMAGE-LOAD EVENT CANNOT BE JOINED TO ITS PROCESS-START EVENT BY IDENTIFIER, ONLY BY PID AND NAME IN A WINDOW.</text>
+      <text x="24" y="856" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace">RULES WITH HAS_ANCESTOR WALK PROCESSTREE.GET_ANCESTORS UP TO DEPTH 10; THAT IS THE ONLY ANCESTRY QUERY THE ENGINE SUPPORTS.</text>
+    </svg>
+  </div>
+</body>
+</html>

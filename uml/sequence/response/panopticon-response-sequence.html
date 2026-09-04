@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panopticon — Response Sequence</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper: #f5f5f5; --color-ink: #2d3142; --color-muted: #4f5d75; --color-accent: #eb6c36;
+      --font-sans: 'Geist', system-ui, sans-serif;
+      --font-serif: 'Instrument Serif', serif;
+      --font-mono: 'Geist Mono', ui-monospace, monospace;
+    }
+    body { font-family: var(--font-sans); background: var(--color-paper); color: var(--color-ink);
+           min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 3rem 2rem; }
+    .frame { max-width: 1400px; width: 100%; }
+    .eyebrow { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500; letter-spacing: 0.18em;
+               text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
+    h1 { font-family: var(--font-serif); font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem); font-weight: 400;
+         letter-spacing: -0.02em; line-height: 1.15; color: var(--color-ink); margin-bottom: 1.5rem; }
+    svg { width: 100%; min-width: 900px; display: block; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">UML Sequence &middot; Response &mdash; recommendation, not execution</p>
+    <h1>Where response stops today, and what the design adds</h1>
+
+    <svg viewBox="0 0 1280 920" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="respseq-title respseq-desc">
+      <title id="respseq-title">Response Sequence</title>
+      <desc id="respseq-desc">UML sequence diagram showing that Panopticon resolves a response recommendation and records simulated remediation actions but never contacts the endpoint, that the recommendation reaches the analyst only as a field on the alert row, and that the designed response service, command queue and endpoint executor chain has no implementation.</desc>
+      <defs>
+        <marker id="arrow-filled" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/></marker>
+        <marker id="arrow-async" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polyline points="0 0, 8 3, 0 6" fill="none" stroke="#4f5d75" stroke-width="1.2"/>
+        </marker>
+        <marker id="arrow-dim" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="rgba(45,49,66,0.45)"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f5f5f5"/>
+
+      <!-- ================= LIFELINES ================= -->
+      <line x1="140" y1="152" x2="140" y2="592" stroke="rgba(45,49,66,0.30)" stroke-width="1" stroke-dasharray="4,4"/>
+      <line x1="380" y1="152" x2="380" y2="592" stroke="rgba(45,49,66,0.30)" stroke-width="1" stroke-dasharray="4,4"/>
+      <line x1="620" y1="152" x2="620" y2="592" stroke="rgba(45,49,66,0.30)" stroke-width="1" stroke-dasharray="4,4"/>
+      <line x1="880" y1="152" x2="880" y2="592" stroke="rgba(45,49,66,0.30)" stroke-width="1" stroke-dasharray="4,4"/>
+      <line x1="1120" y1="152" x2="1120" y2="592" stroke="rgba(45,49,66,0.30)" stroke-width="1" stroke-dasharray="4,4"/>
+
+      <!-- ================= OPT FRAGMENT ================= -->
+      <rect x="100" y="248" width="560" height="224" rx="4" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.22)" stroke-width="1"/>
+      <rect x="100" y="248" width="40" height="16" rx="2" fill="#f5f5f5" stroke="rgba(45,49,66,0.22)" stroke-width="1"/>
+      <text x="120" y="260" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">OPT</text>
+      <text x="112" y="284" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.04em">[rule.level &#8805; 11 and --auto-remediate]</text>
+
+      <!-- ================= ACTIVATION BARS ================= -->
+      <rect x="136" y="200" width="8" height="312" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="0.8"/>
+      <rect x="376" y="312" width="8" height="80" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="0.8"/>
+      <rect x="876" y="512" width="8" height="40" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="0.8"/>
+      <rect x="1116" y="552" width="8" height="40" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="0.8"/>
+
+      <!-- ================= MESSAGES ================= -->
+      <!-- M1 self: resolve recommendation -->
+      <path d="M 144,200 H 184 Q 192,200 192,208 V 224 Q 192,232 184,232 H 148"
+            fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow-filled)"/>
+      <!-- M2 sync: remediate_threat -->
+      <line x1="144" y1="312" x2="372" y2="312" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow-filled)"/>
+      <!-- M3 self: record actions -->
+      <path d="M 384,336 H 424 Q 432,336 432,344 V 360 Q 432,368 424,368 H 388"
+            fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow-filled)"/>
+      <!-- M4 return -->
+      <line x1="372" y1="392" x2="148" y2="392" stroke="#4f5d75" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow-filled)"/>
+      <!-- M5 ABSENT interaction toward the endpoint -->
+      <line x1="384" y1="432" x2="612" y2="432" stroke="#eb6c36" stroke-width="1.2" stroke-dasharray="4,4" opacity="0.55"/>
+      <line x1="484" y1="420" x2="512" y2="444" stroke="#eb6c36" stroke-width="2"/>
+      <line x1="512" y1="420" x2="484" y2="444" stroke="#eb6c36" stroke-width="2"/>
+      <!-- M6 async: alert line appended -->
+      <line x1="144" y1="512" x2="872" y2="512" stroke="#4f5d75" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow-async)"/>
+      <!-- M7 async: rendered row -->
+      <line x1="884" y1="552" x2="1112" y2="552" stroke="#4f5d75" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow-async)"/>
+
+      <!-- ================= MESSAGE LABELS ================= -->
+      <rect x="200" y="204" width="256" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="204" y="213" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">ActiveResponseEngine.resolve_action()</text>
+      <rect x="200" y="220" width="256" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="204" y="229" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">returns a RECOMMENDATION only</text>
+
+      <rect x="176" y="292" width="164" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="258" y="301" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">remediate_threat(...)</text>
+
+      <rect x="440" y="340" width="204" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="444" y="349" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">append RemediationAction</text>
+      <rect x="440" y="356" width="204" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="444" y="365" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">to action_history &#8212; SIMULATED</text>
+
+      <rect x="176" y="372" width="164" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="258" y="381" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">RemediationReport</text>
+
+      <rect x="392" y="408" width="212" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="498" y="417" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">NO ENDPOINT CALL IS MADE</text>
+      <rect x="392" y="448" width="212" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="498" y="457" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">no subprocess, kill, winreg</text>
+
+      <rect x="420" y="488" width="212" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="526" y="497" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">alert appended to alerts.ndjson</text>
+
+      <rect x="912" y="528" width="176" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="1000" y="537" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">row + active_response</text>
+
+      <!-- ================= PARTICIPANTS ================= -->
+      <rect x="40" y="88" width="200" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="40" y="88" width="200" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="140" y="114" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">DetectionRun</text>
+      <text x="140" y="132" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">+ ActiveResponseEngine</text>
+
+      <rect x="280" y="88" width="200" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="280" y="88" width="200" height="64" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <text x="380" y="110" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">RemediationEngine</text>
+      <text x="380" y="128" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">bookkeeping only</text>
+      <text x="380" y="144" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">SIMULATED</text>
+
+      <rect x="520" y="88" width="200" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="520" y="88" width="200" height="64" rx="6" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="620" y="114" fill="#4f5d75" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Windows endpoint</text>
+      <text x="620" y="132" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">never contacted</text>
+
+      <rect x="780" y="88" width="200" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="780" y="88" width="200" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="880" y="114" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Panopticon Console</text>
+      <text x="880" y="132" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">read-only viewer</text>
+
+      <rect x="1020" y="88" width="200" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="1020" y="88" width="200" height="64" rx="6" fill="rgba(79,93,117,0.10)" stroke="#7a8399" stroke-width="1"/>
+      <text x="1120" y="114" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Security Analyst</text>
+      <text x="1120" y="132" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">acts outside the tool</text>
+
+      <!-- ================= DESIGNED-ONLY CHAIN ================= -->
+      <rect x="40" y="624" width="1200" height="152" rx="8" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="4,3"/>
+      <rect x="72" y="618" width="336" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="240" y="627" fill="rgba(45,49,66,0.45)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">DESIGNED RESPONSE CHAIN · NO CODE EXISTS FOR ANY STEP</text>
+
+      <line x1="212" y1="708" x2="228" y2="708" stroke="rgba(45,49,66,0.45)" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-dim)"/>
+      <line x1="376" y1="708" x2="392" y2="708" stroke="rgba(45,49,66,0.45)" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-dim)"/>
+      <line x1="540" y1="708" x2="556" y2="708" stroke="rgba(45,49,66,0.45)" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-dim)"/>
+      <line x1="704" y1="708" x2="720" y2="708" stroke="rgba(45,49,66,0.45)" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-dim)"/>
+      <line x1="868" y1="708" x2="884" y2="708" stroke="rgba(45,49,66,0.45)" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-dim)"/>
+      <line x1="1032" y1="708" x2="1048" y2="708" stroke="rgba(45,49,66,0.45)" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-dim)"/>
+
+      <path d="M 1126,732 V 748 Q 1126,756 1118,756 H 314 Q 306,756 306,748 V 732"
+            fill="none" stroke="rgba(45,49,66,0.45)" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-dim)"/>
+      <rect x="656" y="738" width="72" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="692" y="747" fill="rgba(45,49,66,0.45)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">RESULT</text>
+
+      <rect x="72" y="684" width="140" height="48" rx="6" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="142" y="706" fill="#4f5d75" font-size="9" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Analyst approves</text>
+      <text x="142" y="720" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">designed</text>
+
+      <rect x="236" y="684" width="140" height="48" rx="6" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="306" y="706" fill="#4f5d75" font-size="9" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Console action</text>
+      <text x="306" y="720" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">designed</text>
+
+      <rect x="400" y="684" width="140" height="48" rx="6" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="470" y="706" fill="#4f5d75" font-size="9" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Response Service</text>
+      <text x="470" y="720" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">designed</text>
+
+      <rect x="564" y="684" width="140" height="48" rx="6" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="634" y="706" fill="#4f5d75" font-size="9" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Command Queue</text>
+      <text x="634" y="720" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">designed</text>
+
+      <rect x="728" y="684" width="140" height="48" rx="6" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="798" y="706" fill="#4f5d75" font-size="9" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Officer command</text>
+      <text x="798" y="720" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">designed</text>
+
+      <rect x="892" y="684" width="140" height="48" rx="6" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="962" y="706" fill="#4f5d75" font-size="9" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Response Executor</text>
+      <text x="962" y="720" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">designed</text>
+
+      <rect x="1056" y="684" width="140" height="48" rx="6" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="1126" y="706" fill="#4f5d75" font-size="9" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Endpoint effect</text>
+      <text x="1126" y="720" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">designed</text>
+
+      <!-- ================= LEGEND ================= -->
+      <line x1="40" y1="812" x2="1240" y2="812" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <text x="40" y="832" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGEND</text>
+
+      <line x1="120" y1="828" x2="156" y2="828" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow-filled)"/>
+      <text x="176" y="832" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">SYNCHRONOUS CALL</text>
+
+      <line x1="336" y1="828" x2="372" y2="828" stroke="#4f5d75" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow-async)"/>
+      <text x="392" y="832" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">ASYNCHRONOUS</text>
+
+      <line x1="540" y1="828" x2="576" y2="828" stroke="#eb6c36" stroke-width="1.2" stroke-dasharray="4,4" opacity="0.55"/>
+      <line x1="552" y1="822" x2="566" y2="834" stroke="#eb6c36" stroke-width="2"/>
+      <line x1="566" y1="822" x2="552" y2="834" stroke="#eb6c36" stroke-width="2"/>
+      <text x="596" y="832" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">INTERACTION THAT DOES NOT EXIST</text>
+
+      <rect x="856" y="822" width="20" height="12" rx="2" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="884" y="832" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">DESIGNED, NOT IMPLEMENTED</text>
+
+      <text x="40" y="864" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace">REMEDIATIONACTION RECORDS CARRY STATUS &#8220;SUCCESS&#8221; WHEN DRY_RUN IS FALSE, WHICH IS THE DEFAULT IN MAIN.PY. NOTHING IS EXECUTED; THE HONEST STATUS IS SIMULATED.</text>
+      <text x="40" y="880" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace">DETECTION AND RESPONSE EXECUTION STAY SEPARATE. A DETECTION MAY RECOMMEND TERMINATE_PROCESS, BLOCK_FIREWALL_IP OR ISOLATE_HOST; NO COMPONENT CARRIES IT OUT.</text>
+      <text x="40" y="896" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace">THE ANALYST SEES THE RECOMMENDATION AS A FIELD ON THE ALERT ROW AND ACTS MANUALLY, OUTSIDE PANOPTICON. THE CONSOLE HAS NO WRITE PATH.</text>
+    </svg>
+  </div>
+</body>
+</html>
