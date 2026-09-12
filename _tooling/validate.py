@@ -10,15 +10,16 @@ WORKSPACE = pathlib.Path(os.environ.get("PANOPTICON_WORKSPACE", DIAG.parent))
 AGENT = WORKSPACE / "panopticon-agent"
 ENGINE = WORKSPACE / "panopticon-detection-engine"
 CONSOLE = WORKSPACE / "panopticon-console"
+MANAGER = WORKSPACE / "panopticon-manager"
 SKIP = (".git", ".venv", "build-officer-x64", "__pycache__", ".pytest_cache")
 
-missing = [str(p) for p in (AGENT, ENGINE, CONSOLE) if not p.is_dir()]
+missing = [str(p) for p in (AGENT, MANAGER, ENGINE, CONSOLE) if not p.is_dir()]
 if missing:
-    print("validate.py needs the three source repositories checked out beside this one:")
+    print("validate.py needs the four source repositories checked out beside this one:")
     for p in missing:
         print("  missing:", p)
     print()
-    print("Clone panopticon-agent, panopticon-detection-engine and panopticon-console")
+    print("Clone panopticon-agent, panopticon-manager, panopticon-detection-engine and panopticon-console")
     print("as siblings of this repository, or set PANOPTICON_WORKSPACE to the directory")
     print("that contains all three.")
     sys.exit(2)
@@ -35,7 +36,8 @@ def read_all(base, pats):
 agent_src = read_all(AGENT, ("*.hpp", "*.cpp", "CMakeLists.txt"))
 engine_src = read_all(ENGINE, ("*.py",))
 console_src = read_all(CONSOLE, ("*.py", "*.js"))
-all_src = agent_src + engine_src + console_src
+manager_src = read_all(MANAGER, ("*.py",))
+all_src = agent_src + manager_src + engine_src + console_src
 schema = json.loads((AGENT / "schema" / "event.schema.json").read_text(encoding="utf-8"))
 fails = []
 checks = [0]
@@ -115,6 +117,11 @@ for danger in ("subprocess", "os.kill", "winreg", "socket.", "os.remove", "shuti
     check("REMEDIATION EXECUTES", danger not in rem_src, danger + " found in src/remediation")
 
 check("CONSOLE READ-ONLY", "do_POST" not in console_src and "do_PUT" not in console_src, "")
+check("MANAGER INGEST ROUTE", '@router.post("/api/v1/ingest"' in manager_src, "")
+check("MANAGER EVENT DEDUP", "INSERT OR IGNORE INTO events" in manager_src, "")
+check("MANAGER DETECTION WORKER", "class DetectionWorker" in manager_src, "")
+check("MANAGER CLAIM LOOP", "detect_state='claimed'" in manager_src, "")
+check("NO COMMAND RECEIVER", "/api/v1/commands" not in manager_src, "")
 
 for f in sorted(DIAG.rglob("*.html")):
     t = f.read_text(encoding="utf-8")

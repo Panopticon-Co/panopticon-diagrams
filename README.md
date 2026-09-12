@@ -2,8 +2,9 @@
 
 The complete UML and software-architecture diagram set for the **Panopticon&Co** endpoint
 detection platform. Fifteen diagrams, each one derived from the code and documents in
-`panopticon-agent`, `panopticon-detection-engine` and `panopticon-console`, and each one
-checked against the working tree on **2026-09-04**.
+`panopticon-agent`, `panopticon-manager`, `panopticon-detection-engine` and
+`panopticon-console`, and each one checked against reconciled `main` working trees on
+**2026-09-12**.
 
 The governing contract for this set is [`DIAGRAM_SPECIFICATION.md`](DIAGRAM_SPECIFICATION.md).
 Read it before changing any diagram. It records the source-of-truth hierarchy, the
@@ -34,6 +35,7 @@ source, a standalone **`.svg`**, and a 2x **`.png`**.
 |---|---|---|
 | System context | [`context/panopticon-system-context.html`](context/panopticon-system-context.html) | Who uses Panopticon, what it observes, and where its boundary is. Three human roles, one system actor, three external Windows systems. |
 | High-level architecture | [`architecture/panopticon-high-level-architecture.html`](architecture/panopticon-high-level-architecture.html) | How a Windows event becomes a visible alert, in nine components across two zones. Also states, in a dashed panel, the backend that is designed but not built. |
+| Network ingestion | [`architecture/panopticon-network-ingestion.html`](architecture/panopticon-network-ingestion.html) | The implemented optional Officer-to-Manager HTTPS path, durable Manager event queue and detection worker, plus the actual privilege boundary and absent endpoint-response path. |
 
 ### UML
 

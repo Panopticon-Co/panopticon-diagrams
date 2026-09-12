@@ -4,8 +4,8 @@
 **Date:** 2026-09-04
 **Status:** Authoritative for the diagram set in this directory
 **Scope:** The complete UML and software-architecture diagram set for the Panopticon&Co
-capstone platform, covering `panopticon-agent` (Officer), `panopticon-detection-engine`
-(eyedetect), and `panopticon-console`.
+capstone platform, covering `panopticon-agent` (Officer), `panopticon-manager`,
+`panopticon-detection-engine` (eyedetect), and `panopticon-console`.
 
 This file is the contract every diagram in `docs/diagrams/` obeys. If a diagram and this
 file disagree, one of them is wrong and must be corrected — the disagreement is never
@@ -151,10 +151,10 @@ response sequence diagram, always dashed and tagged `DESIGNED`. Source:
 - Agent-side durable SQLite spool with acknowledged batch deletion (roadmap phase 6)
 - Agent enrollment, persistent installation identity, authenticated TLS batch delivery,
   signed configuration fetch (roadmap phase 7)
-- Backend ingestion service: agent authentication, schema-version validation, size limits,
-  per-event rejection results, immutable observation store
+- Agent enrollment/authentication, durable retry and batch-id replay storage
 - Cross-source process-identity reconciliation on `host.id` plus `process.entity_id`
-- Alert and case store, response service, command queue, endpoint response executor
+- Endpoint response service, command queue, typed response handlers and result receipts
+- Linux endpoint agent and its collector, spool, delivery, and privilege-separation design
 - Windows service packaging (roadmap phase 8)
 
 **No component in this list may appear as implemented in any diagram.**
@@ -172,17 +172,27 @@ There is no HTTP between agent and engine, no named pipe (despite a stale docstr
 The engine either reads a captured NDJSON file or spawns the agent as a child process and
 reads its stdout pipe.
 
+**Implemented HTTPS boundary (2026-09-12).** Officer also has an optional
+`officer-delivery` path: `Uploader` batches serialized NDJSON in memory on a background
+thread and uses WinHTTP to post it to Manager's `POST /api/v1/ingest`. Manager validates
+and deduplicates bounded batches, commits accepted rows to SQLite, and its single
+`DetectionWorker` claims rows for the vendored eyedetect engine. This does not implement a
+Linux agent, agent durable spool/retry, enrollment/authentication, command receiver,
+response handler, result receipt, or endpoint-control path. Officer needs Windows elevation
+for ETW/Sysmon; Manager consumes normalized input and has no endpoint-control privilege.
+
 ---
 
 ## 4. Diagram inventory
 
-15 diagrams. Every one is a hand-authored, self-contained HTML file with inline SVG,
+16 diagrams. Every one is a hand-authored, self-contained HTML file with inline SVG,
 produced with the `diagram-design` skill.
 
 | # | Diagram | Directory | Visual type | Status shown |
 |---|---|---|---|---|
 | 1 | System context | `context/` | Architecture with context boundary | Current |
 | 2 | High-level system architecture | `architecture/` | Architecture, zoned | Current plus designed backend |
+| 3 | Implemented network ingestion | `architecture/` | Architecture, zoned | Current Officer HTTPS and Manager worker path |
 | 3 | Use case | `uml/use-case/` | UML use case | Current |
 | 4 | Component | `uml/component/` | UML component | Current |
 | 5 | Agent class model | `uml/class/agent/` | UML class | Current |
