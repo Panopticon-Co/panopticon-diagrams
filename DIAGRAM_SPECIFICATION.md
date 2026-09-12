@@ -176,10 +176,15 @@ reads its stdout pipe.
 `officer-delivery` path: `Uploader` batches serialized NDJSON in memory on a background
 thread and uses WinHTTP to post it to Manager's `POST /api/v1/ingest`. Manager validates
 and deduplicates bounded batches, commits accepted rows to SQLite, and its single
-`DetectionWorker` claims rows for the vendored eyedetect engine. This does not implement a
-Linux agent, agent durable spool/retry, enrollment/authentication, command receiver,
-response handler, result receipt, or endpoint-control path. Officer needs Windows elevation
-for ETW/Sysmon; Manager consumes normalized input and has no endpoint-control privilege.
+`DetectionWorker` claims rows for the vendored eyedetect engine. Officer needs Windows
+elevation for ETW/Sysmon; Manager consumes normalized input and has no endpoint-control
+privilege. The network-ingestion diagram is scoped to this path only — it does not depict
+Manager's separately-implemented agent enrollment/bearer authentication or its closed-action
+command queue (`POST`/`GET`/`POST` on `/api/v1/commands`, `/agents/{id}/commands`,
+`/agents/{id}/command-results`), nor the separate `panopticon-linux-agent` repository, all of
+which exist in source as of 2026-09-13. What remains genuinely unimplemented anywhere in the
+system: a response engine linking a detection/alert to command creation (no code path
+connects the two), analyst authorization/approval of a response, and host isolation.
 
 ---
 

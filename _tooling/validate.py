@@ -11,7 +11,7 @@ AGENT = WORKSPACE / "panopticon-agent"
 ENGINE = WORKSPACE / "panopticon-detection-engine"
 CONSOLE = WORKSPACE / "panopticon-console"
 MANAGER = WORKSPACE / "panopticon-manager"
-SKIP = (".git", ".venv", "build-officer-x64", "__pycache__", ".pytest_cache")
+SKIP = (".git", ".venv", "build-officer-x64", "__pycache__", ".pytest_cache", "vendor")
 
 missing = [str(p) for p in (AGENT, MANAGER, ENGINE, CONSOLE) if not p.is_dir()]
 if missing:
@@ -90,7 +90,7 @@ for f in ("operation","key_path","value_name","value_type","value_data"):
 for f in ("path","is_signed","signature_status","hash"):
     check("MISSING image_load field", f in props["image_load"]["properties"], f)
 
-check("SCHEMA VERSIONS", set(props["schema_version"]["enum"]) == {"0.2","0.3"}, str(props["schema_version"]["enum"]))
+check("SCHEMA VERSIONS", set(props["schema_version"]["enum"]) == {"0.2","0.3","0.4"}, str(props["schema_version"]["enum"]))
 check("CATEGORY ENUM", set(props["event"]["properties"]["category"]["enum"]) == {"process","network","file","registry","image_load"}, "")
 check("STRICT SCHEMA", schema.get("additionalProperties") is False, "")
 check("PROCESS ALWAYS REQUIRED", "process" in schema["required"], "")
@@ -121,7 +121,16 @@ check("MANAGER INGEST ROUTE", '@router.post("/api/v1/ingest"' in manager_src, ""
 check("MANAGER EVENT DEDUP", "INSERT OR IGNORE INTO events" in manager_src, "")
 check("MANAGER DETECTION WORKER", "class DetectionWorker" in manager_src, "")
 check("MANAGER CLAIM LOOP", "detect_state='claimed'" in manager_src, "")
-check("NO COMMAND RECEIVER", "/api/v1/commands" not in manager_src, "")
+command_route_files = [f for f in (MANAGER / "manager" / "routers").glob("commands.py")]
+command_route_src = "\n".join(f.read_text(encoding="utf-8") for f in command_route_files)
+check("COMMAND ROUTE FILE FOUND", bool(command_route_src), "manager/routers/commands.py")
+check("COMMAND ENDPOINT AUTH REQUIRED", "PANOPTICON_COMMAND_TOKEN" in command_route_src and "hmac.compare_digest" in command_route_src, "")
+check("COMMAND ACTION SET CLOSED", set(re.findall(r'"([A-Z_]+)",?\n', command_route_src)) >= {
+    "KILL_PROCESS", "COLLECT_PROCESS_INFO", "COLLECT_NETWORK_CONNECTIONS",
+    "COLLECT_FILE", "QUARANTINE_FILE", "ISOLATE_HOST", "RELEASE_HOST_ISOLATION",
+}, "")
+for danger in ("subprocess", "os.system", "popen(", "os.exec"):
+    check("NO SHELL EXEC IN MANAGER COMMAND ROUTE", danger not in command_route_src, danger + " found in manager/routers/commands.py")
 
 for f in sorted(DIAG.rglob("*.html")):
     t = f.read_text(encoding="utf-8")

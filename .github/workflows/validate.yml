@@ -1,0 +1,53 @@
+name: Validate diagrams against source
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout panopticon-agent
+        uses: actions/checkout@v4
+        with:
+          repository: Panopticon-Co/panopticon-agent
+          path: _panopticon-agent-checkout
+
+      - name: Checkout panopticon-manager
+        uses: actions/checkout@v4
+        with:
+          repository: Panopticon-Co/panopticon-manager
+          submodules: recursive
+          path: _panopticon-manager-checkout
+
+      - name: Checkout panopticon-detection-engine
+        uses: actions/checkout@v4
+        with:
+          repository: Panopticon-Co/panopticon-detection-engine
+          path: _panopticon-detection-engine-checkout
+
+      - name: Checkout panopticon-console
+        uses: actions/checkout@v4
+        with:
+          repository: Panopticon-Co/panopticon-console
+          path: _panopticon-console-checkout
+
+      - name: Move sibling checkouts into place
+        run: |
+          mv _panopticon-agent-checkout ../panopticon-agent
+          mv _panopticon-manager-checkout ../panopticon-manager
+          mv _panopticon-detection-engine-checkout ../panopticon-detection-engine
+          mv _panopticon-console-checkout ../panopticon-console
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run source-consistency validator
+        run: python _tooling/validate.py
