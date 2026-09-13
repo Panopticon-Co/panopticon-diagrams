@@ -37,12 +37,19 @@ jobs:
           repository: Panopticon-Co/panopticon-console
           path: _panopticon-console-checkout
 
+      - name: Checkout panopticon-linux-agent
+        uses: actions/checkout@v4
+        with:
+          repository: Panopticon-Co/panopticon-linux-agent
+          path: _panopticon-linux-agent-checkout
+
       - name: Move sibling checkouts into place
         run: |
           mv _panopticon-agent-checkout ../panopticon-agent
           mv _panopticon-manager-checkout ../panopticon-manager
           mv _panopticon-detection-engine-checkout ../panopticon-detection-engine
           mv _panopticon-console-checkout ../panopticon-console
+          mv _panopticon-linux-agent-checkout ../panopticon-linux-agent
 
       - name: Set up Python
         uses: actions/setup-python@v5
