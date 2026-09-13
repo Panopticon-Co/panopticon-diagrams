@@ -11,17 +11,18 @@ AGENT = WORKSPACE / "panopticon-agent"
 ENGINE = WORKSPACE / "panopticon-detection-engine"
 CONSOLE = WORKSPACE / "panopticon-console"
 MANAGER = WORKSPACE / "panopticon-manager"
-SKIP = (".git", ".venv", "build-officer-x64", "__pycache__", ".pytest_cache", "vendor")
+LINUX_AGENT = WORKSPACE / "panopticon-linux-agent"
+SKIP = (".git", ".venv", "build-officer-x64", "build", "__pycache__", ".pytest_cache", "vendor")
 
-missing = [str(p) for p in (AGENT, MANAGER, ENGINE, CONSOLE) if not p.is_dir()]
+missing = [str(p) for p in (AGENT, MANAGER, ENGINE, CONSOLE, LINUX_AGENT) if not p.is_dir()]
 if missing:
-    print("validate.py needs the four source repositories checked out beside this one:")
+    print("validate.py needs the five source repositories checked out beside this one:")
     for p in missing:
         print("  missing:", p)
     print()
-    print("Clone panopticon-agent, panopticon-manager, panopticon-detection-engine and panopticon-console")
-    print("as siblings of this repository, or set PANOPTICON_WORKSPACE to the directory")
-    print("that contains all three.")
+    print("Clone panopticon-agent, panopticon-manager, panopticon-detection-engine,")
+    print("panopticon-console and panopticon-linux-agent as siblings of this repository,")
+    print("or set PANOPTICON_WORKSPACE to the directory that contains all five.")
     sys.exit(2)
 
 def read_all(base, pats):
@@ -37,7 +38,8 @@ agent_src = read_all(AGENT, ("*.hpp", "*.cpp", "CMakeLists.txt"))
 engine_src = read_all(ENGINE, ("*.py",))
 console_src = read_all(CONSOLE, ("*.py", "*.js"))
 manager_src = read_all(MANAGER, ("*.py",))
-all_src = agent_src + manager_src + engine_src + console_src
+linux_agent_src = read_all(LINUX_AGENT, ("*.hpp", "*.cpp", "CMakeLists.txt"))
+all_src = agent_src + manager_src + engine_src + console_src + linux_agent_src
 schema = json.loads((AGENT / "schema" / "event.schema.json").read_text(encoding="utf-8"))
 fails = []
 checks = [0]
@@ -125,12 +127,72 @@ command_route_files = [f for f in (MANAGER / "manager" / "routers").glob("comman
 command_route_src = "\n".join(f.read_text(encoding="utf-8") for f in command_route_files)
 check("COMMAND ROUTE FILE FOUND", bool(command_route_src), "manager/routers/commands.py")
 check("COMMAND ENDPOINT AUTH REQUIRED", "PANOPTICON_COMMAND_TOKEN" in command_route_src and "hmac.compare_digest" in command_route_src, "")
-check("COMMAND ACTION SET CLOSED", set(re.findall(r'"([A-Z_]+)",?\n', command_route_src)) >= {
+CLOSED_ACTION_SET = {
     "KILL_PROCESS", "COLLECT_PROCESS_INFO", "COLLECT_NETWORK_CONNECTIONS",
     "COLLECT_FILE", "QUARANTINE_FILE", "ISOLATE_HOST", "RELEASE_HOST_ISOLATION",
-}, "")
+}
+action_literal = re.search(r"Action = Literal\[(.*?)\]", command_route_src, re.S)
+manager_actions = set(re.findall(r'"([A-Z_]+)"', action_literal.group(1))) if action_literal else set()
+check("COMMAND ACTION SET CLOSED (exactly 7, manager)", manager_actions == CLOSED_ACTION_SET,
+      "found " + str(sorted(manager_actions)))
 for danger in ("subprocess", "os.system", "popen(", "os.exec"):
     check("NO SHELL EXEC IN MANAGER COMMAND ROUTE", danger not in command_route_src, danger + " found in manager/routers/commands.py")
+
+# The Linux agent's command parser is the other half of the closed action set
+# -- both sides must agree exactly, or a 7th/8th action could exist on one
+# side without the other rejecting it.
+linux_command_files = [f for f in (LINUX_AGENT / "src").glob("command.cpp")]
+linux_command_src = "\n".join(f.read_text(encoding="utf-8") for f in linux_command_files)
+check("LINUX AGENT COMMAND FILE FOUND", bool(linux_command_src), "src/command.cpp")
+linux_actions = set(re.findall(r'action == "([A-Z_]+)"', linux_command_src))
+check("COMMAND ACTION SET CLOSED (exactly 7, linux agent)", linux_actions == CLOSED_ACTION_SET,
+      "found " + str(sorted(linux_actions)))
+
+# Host isolation: exactly 2 opcodes, no free-form content, no shell/exec
+# anywhere in the privileged helper (ADR 004 -- see docs/adr in
+# panopticon-linux-agent). This is the one process in the whole system that
+# holds CAP_NET_ADMIN, so this check matters more than most.
+isolation_hpp_files = [f for f in (LINUX_AGENT / "include").rglob("isolation.hpp")]
+isolation_hpp_src = "\n".join(f.read_text(encoding="utf-8") for f in isolation_hpp_files)
+check("ISOLATION HPP FOUND", bool(isolation_hpp_src), "include/panopticon/linux_agent/isolation.hpp")
+opcodes = set(re.findall(r"(\w+)\s*=\s*\d+U?,", re.search(r"enum class isolation_opcode.*?\{(.*?)\}", isolation_hpp_src, re.S).group(1))) if "enum class isolation_opcode" in isolation_hpp_src else set()
+check("ISOLATION IPC EXACTLY 2 OPCODES", opcodes == {"isolate", "release"}, "found " + str(sorted(opcodes)))
+isolation_impl_files = [
+    f for f in (LINUX_AGENT / "src").glob("isolation*.cpp")
+]
+isolation_impl_src = "\n".join(f.read_text(encoding="utf-8") for f in isolation_impl_files)
+check("ISOLATION IMPL FOUND", bool(isolation_impl_src), "src/isolation*.cpp")
+for danger in ("system(", "popen(", "execve(", "execvp(", "execl(", "execlp(", "/bin/sh"):
+    check("NO SHELL EXEC IN ISOLATION HELPER", danger not in isolation_impl_src, danger + " found in linux-agent isolation source")
+
+# Response Engine tier defaults -- KILL_PROCESS/ISOLATE_HOST/RELEASE_HOST_ISOLATION
+# must always require analyst approval; the two read-only collectors are the
+# only actions ever allowed to auto-enqueue. A regression here would let a
+# detection auto-fire a destructive action, silently violating a locked
+# design decision.
+response_files = [f for f in (MANAGER / "manager" / "detection").glob("response.py")]
+response_src = "\n".join(f.read_text(encoding="utf-8") for f in response_files)
+check("RESPONSE ENGINE FILE FOUND", bool(response_src), "manager/detection/response.py")
+tiers_block = re.search(r"_TIERS[^=]*=\s*\{(.*?)\}", response_src, re.S)
+tiers = dict(re.findall(r'"([A-Z_]+)":\s*"([A-Z_]+)"', tiers_block.group(1))) if tiers_block else {}
+for always_approval in ("KILL_PROCESS", "ISOLATE_HOST", "RELEASE_HOST_ISOLATION"):
+    check("RESPONSE TIER ALWAYS ANALYST_APPROVAL", tiers.get(always_approval) == "ANALYST_APPROVAL", always_approval + " -> " + str(tiers.get(always_approval)))
+for auto_safe in ("COLLECT_PROCESS_INFO", "COLLECT_NETWORK_CONNECTIONS"):
+    check("RESPONSE TIER AUTO_SAFE FOR READ-ONLY ACTIONS", tiers.get(auto_safe) == "AUTO_SAFE", auto_safe + " -> " + str(tiers.get(auto_safe)))
+check("MANAGER RESPONSE ACTIONS ROUTES", all(
+    route in manager_src for route in (
+        '@router.get("/api/v1/response-actions"',
+        '@router.post("/api/v1/response-actions/{response_id}/authorize"',
+        '@router.post("/api/v1/response-actions/{response_id}/reject"',
+    )
+), "")
+check("MANAGER ALERTS QUERY ROUTE", '@router.get("/api/v1/alerts"' in manager_src, "")
+
+# Console's response-actions view stays a same-origin, read-only proxy: no
+# cross-origin fetch, no mutating route, per the locked "console never
+# executes a response" boundary.
+check("CONSOLE RESPONSE ACTIONS PROXY ROUTE", '"/api/response-actions"' in console_src, "")
+check("CONSOLE NEVER CALLS MANAGER FROM THE BROWSER", "/api/v1/response-actions" not in read_all(CONSOLE, ("*.js",)), "")
 
 for f in sorted(DIAG.rglob("*.html")):
     t = f.read_text(encoding="utf-8")
