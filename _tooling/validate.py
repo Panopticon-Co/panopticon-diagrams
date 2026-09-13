@@ -131,7 +131,20 @@ CLOSED_ACTION_SET = {
     "KILL_PROCESS", "COLLECT_PROCESS_INFO", "COLLECT_NETWORK_CONNECTIONS",
     "COLLECT_FILE", "QUARANTINE_FILE", "ISOLATE_HOST", "RELEASE_HOST_ISOLATION",
 }
-action_literal = re.search(r"Action = Literal\[(.*?)\]", command_route_src, re.S)
+# The closed action Literal and the tier table below both moved out of
+# manager/ and into the extracted panopticon-response-engine domain package
+# (vendored into Manager as vendor/response_engine), which read_all()
+# deliberately excludes from manager_src via SKIP -- read it directly here
+# instead of assuming it still lives inline in Manager's own source.
+response_engine_pkg = MANAGER / "vendor" / "response_engine" / "response_engine"
+def read_vendored(name):
+    p = response_engine_pkg / name
+    return p.read_text(encoding="utf-8") if p.is_file() else ""
+response_engine_contract_src = read_vendored("contract.py")
+response_engine_policy_src = read_vendored("policy.py")
+check("RESPONSE ENGINE VENDORED CONTRACT FOUND", bool(response_engine_contract_src),
+      "vendor/response_engine/response_engine/contract.py")
+action_literal = re.search(r"Action = Literal\[(.*?)\]", response_engine_contract_src, re.S)
 manager_actions = set(re.findall(r'"([A-Z_]+)"', action_literal.group(1))) if action_literal else set()
 check("COMMAND ACTION SET CLOSED (exactly 7, manager)", manager_actions == CLOSED_ACTION_SET,
       "found " + str(sorted(manager_actions)))
@@ -170,11 +183,13 @@ for danger in ("system(", "popen(", "execve(", "execvp(", "execl(", "execlp(", "
 # only actions ever allowed to auto-enqueue. A regression here would let a
 # detection auto-fire a destructive action, silently violating a locked
 # design decision.
-response_files = [f for f in (MANAGER / "manager" / "detection").glob("response.py")]
-response_src = "\n".join(f.read_text(encoding="utf-8") for f in response_files)
-check("RESPONSE ENGINE FILE FOUND", bool(response_src), "manager/detection/response.py")
-tiers_block = re.search(r"_TIERS[^=]*=\s*\{(.*?)\}", response_src, re.S)
-tiers = dict(re.findall(r'"([A-Z_]+)":\s*"([A-Z_]+)"', tiers_block.group(1))) if tiers_block else {}
+check("RESPONSE ENGINE VENDORED POLICY FOUND", bool(response_engine_policy_src),
+      "vendor/response_engine/response_engine/policy.py")
+tiers_block = re.search(r"_TIERS[^=]*=\s*\{(.*?)\}", response_engine_policy_src, re.S)
+# Values are Tier.AUTO_SAFE / Tier.ANALYST_APPROVAL enum members, not quoted
+# strings, since this table moved from a plain manager-local dict into the
+# extracted response_engine.policy module's typed Tier enum.
+tiers = dict(re.findall(r'"([A-Z_]+)":\s*Tier\.([A-Z_]+)', tiers_block.group(1))) if tiers_block else {}
 for always_approval in ("KILL_PROCESS", "ISOLATE_HOST", "RELEASE_HOST_ISOLATION"):
     check("RESPONSE TIER ALWAYS ANALYST_APPROVAL", tiers.get(always_approval) == "ANALYST_APPROVAL", always_approval + " -> " + str(tiers.get(always_approval)))
 for auto_safe in ("COLLECT_PROCESS_INFO", "COLLECT_NETWORK_CONNECTIONS"):

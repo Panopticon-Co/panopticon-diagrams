@@ -184,10 +184,34 @@ elevation for ETW/Sysmon; Manager consumes normalized input and has no endpoint-
 privilege. The network-ingestion diagram is scoped to this path only — it does not depict
 Manager's separately-implemented agent enrollment/bearer authentication or its closed-action
 command queue (`POST`/`GET`/`POST` on `/api/v1/commands`, `/agents/{id}/commands`,
-`/agents/{id}/command-results`), nor the separate `panopticon-linux-agent` repository, all of
-which exist in source as of 2026-09-13. What remains genuinely unimplemented anywhere in the
-system: a response engine linking a detection/alert to command creation (no code path
-connects the two), analyst authorization/approval of a response, and host isolation.
+`/agents/{id}/command-results`), nor the separate `panopticon-linux-agent` repository.
+
+**Updated (2026-09-13): the response engine no longer belongs in an "unimplemented" list.**
+A prior revision of this document said a response engine linking a detection/alert to
+command creation, analyst authorization/approval, and host isolation were all genuinely
+unimplemented anywhere in the system. That is now stale. As of this date, all of the
+following exist in source, are wired end-to-end, and are verified on real CI (not merely
+present in source): `panopticon-response-engine` (a domain package — not a separately
+deployed service — inside `panopticon-manager`'s one deployable backend) translates a
+detection recommendation into one of the closed seven typed actions
+(`KILL_PROCESS`/`COLLECT_PROCESS_INFO`/`COLLECT_NETWORK_CONNECTIONS`/`COLLECT_FILE`/
+`QUARANTINE_FILE`/`ISOLATE_HOST`/`RELEASE_HOST_ISOLATION`) and enforces its lifecycle
+(`PENDING -> AUTHORIZED -> DISPATCHED -> ACCEPTED -> SUCCEEDED|FAILED|REJECTED`, plus
+`CANCELLED`/`EXPIRED`); Manager persists, authenticates, and dispatches it to an enrolled
+endpoint agent (Windows or Linux); a real end-to-end test proves a genuine
+threshold-rule-triggered alert producing an `ISOLATE_HOST` command through real analyst
+authorization, dispatch, endpoint acceptance, and audit trail
+(`panopticon-manager/tests/test_e2e_response_pipeline.py`); and the Linux agent's host
+isolation genuinely blocks non-Manager network traffic at the kernel level via a privileged
+netlink/nftables helper, verified with real non-loopback packet-level network-namespace
+testing on GitHub Actions CI. This is **boundary-level and vendor-integration-limited**
+coverage, not a claim that every recommendation path is complete: the vendored eyedetect
+engine's own production recommendation logic still cannot generate every desired typed
+command (e.g. no real path currently produces `COLLECT_PROCESS_INFO`/
+`COLLECT_NETWORK_CONNECTIONS`, and its recommendation model has no `target_start_time_ticks`
+field, so no real detection can currently produce a `KILL_PROCESS` command through that
+specific path) — this is a documented, accepted vendor-integration gap, not something these
+diagrams should either hide or imply is a response-engine limitation.
 
 ---
 
