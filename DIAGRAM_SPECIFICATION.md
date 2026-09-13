@@ -125,10 +125,13 @@ CMake targets: `officer-core` (static), `officer-collectors` (static), `officer-
 | `EndpointRemediationEngine` | **Simulated** — records `RemediationAction` objects and executes nothing | `src/remediation/engine.py` |
 | `HealthState`, `Metrics` | JSON health snapshot and Prometheus-text metrics, both written on exit | `src/reliability/` |
 
-Rule corpus: **86 YAML files** across 15 directories (`cloud`, `collection`,
+Rule corpus: **92 YAML files** across 16 directories (`cloud`, `collection`,
 `credential_access`, `defense_evasion`, `exfiltration`, `file`, `identity`,
-`initial_access`, `lateral_movement`, `malware`, `network`, `persistence`,
-`privilege_escalation`, `process`, `web_api`).
+`initial_access`, `lateral_movement`, `linux_process`, `malware`, `network`,
+`persistence`, `privilege_escalation`, `process`, `web_api`). `linux_process`
+(6 rules) is the only domain targeting Linux-sourced telemetry (schema 0.4
+procfs events ingested via `panopticon-manager`) rather than
+Windows ETW/Sysmon fields.
 
 **Console (`panopticon-console`, Python standard library)**
 
@@ -270,8 +273,8 @@ File naming: `panopticon-<subject>.html`, kebab-case, matching the `<title>` slu
 8. **Schema version is 0.3 everywhere.** The agent emits 0.3; the engine accepts 0.1, 0.2
    and 0.3. Diagrams showing agent output say 0.3, and diagrams showing the engine's
    accepted range say the range.
-9. **Counts are stated once and consistently:** 86 rules, 15 rule domains, 5 telemetry
-   families, 7 detection stages (A to G), 3 console routes, 13 comparison operators.
+9. **Counts are stated once and consistently:** 92 rules, 16 rule domains, 5 telemetry
+   families, 7 detection stages (A to G), 4 console routes, 13 comparison operators.
 
 ---
 
@@ -336,7 +339,7 @@ case below and mark the affected element accordingly.
 | 2 | Remediation status is `"SUCCESS"` when `dry_run=False`, and `main.py` constructs `EndpointRemediationEngine(dry_run=False)` | `src/remediation/engine.py`, `src/main.py` | The label says SUCCESS while nothing executes. The honest status for every action in the current build is SIMULATED. Diagrams use the `SIMULATED` tag. |
 | 3 | "Unbuffered NDJSON Pipe / Named Pipe"; the `LiveTelemetryStream` docstring says "subprocess, Named Pipe, or NDJSON file" | `docs/OFFICER_INTEGRATION.md`, `src/ingestion/live_stream.py` | Only two paths exist: `stream_from_file` and `stream_from_officer_process`. There is **no named-pipe implementation**. |
 | 4 | "Schema 0.2" as the integration contract | `OFFICER_INTEGRATION.md` heading and body | The agent emits `schema_version` **0.3** (`kSchemaVersion` in `panopticon_event.hpp`) and the engine accepts `("0.1","0.2","0.3")`. The document's example payload is a valid but outdated 0.2 record. |
-| 5 | "84+ Wazuh/Sigma Rules"; "Tests: 43 Passed" badge | engine `README.md` | Actual: **86** rule YAML files and **151 passed, 2 skipped**. The badges are stale. |
+| 5 | "84+ Wazuh/Sigma Rules"; "Tests: 43 Passed" badge | engine `README.md` | Actual: **92** rule YAML files and **161 passed, 2 skipped**. The badges are stale. |
 | 6 | Root `CLAUDE.md`: `--auto-remediate` "is `store_true, default=True` with no counterpart — impossible to disable" | root `CLAUDE.md` against `src/main.py` | Already fixed. The flag now uses `argparse.BooleanOptionalAction`, so `--no-auto-remediate` works. |
 | 7 | Root `CLAUDE.md` describes a two-repository workspace, process-creation-only telemetry and Schema 0.2 | root `CLAUDE.md` | Stale. There are **three** repositories (the console exists), **five** telemetry families, and Schema **0.3**. |
 | 8 | CMake `project(officer VERSION 0.2.0)` | `CMakeLists.txt` against `panopticon_event.hpp` | The emitted `agent.version` is `0.3.0` (`kAgentVersion`). The build-system version was not bumped. Cosmetic, but the two disagree. |
@@ -350,7 +353,7 @@ case below and mark the affected element accordingly.
 - **No runtime performance data is depicted.** The known agent event-loss behaviour under
   high Sysmon event ID 1 rates (agent `V3_TELEMETRY.md` §9) is a reliability property, not
   a structural one, and is noted in the README rather than drawn.
-- **The 86 rules are represented by their structure, not enumerated.** A rule catalogue is
+- **The 92 rules are represented by their structure, not enumerated.** A rule catalogue is
   a table, not a diagram.
 - **ARM64 is not drawn separately.** The build is triplet-driven and structurally
   identical; only the validated x64 path is shown, with the ARM64 status noted.
