@@ -98,9 +98,9 @@ check("STRICT SCHEMA", schema.get("additionalProperties") is False, "")
 check("PROCESS ALWAYS REQUIRED", "process" in schema["required"], "")
 
 n_rules = len(list((ENGINE / "rules").rglob("*.yaml")))
-check("RULE COUNT", n_rules == 86, "found " + str(n_rules) + ", diagrams say 86")
+check("RULE COUNT", n_rules == 92, "found " + str(n_rules) + ", diagrams say 92")
 n_domains = len([d for d in (ENGINE / "rules").iterdir() if d.is_dir()])
-check("RULE DOMAIN COUNT", n_domains == 15, "found " + str(n_domains) + ", spec says 15")
+check("RULE DOMAIN COUNT", n_domains == 16, "found " + str(n_domains) + ", spec says 16")
 ops = re.search(r"OPERATOR_MAP\s*=\s*\{(.*?)\}", engine_src, re.S)
 n_ops = len(re.findall(r'"\w+":', ops.group(1))) if ops else 0
 check("OPERATOR COUNT", n_ops == 13, "found " + str(n_ops) + ", diagrams say 13")
