@@ -1,15 +1,26 @@
 # Panopticon Diagram Set
 
 The complete UML and software-architecture diagram set for the **Panopticon&Co** endpoint
-detection platform. Fifteen diagrams, each one derived from the code and documents in
-`panopticon-agent`, `panopticon-manager`, `panopticon-detection-engine` and
-`panopticon-console`, and each one checked against reconciled `main` working trees on
-**2026-09-12**.
+detection platform, a cybersecurity capstone/research project. Fifteen diagrams, each one
+derived from the code and documents in `panopticon-agent`, `panopticon-manager`,
+`panopticon-detection-engine` and `panopticon-console`, and each one checked against
+reconciled `main` working trees on **2026-09-12**.
+
+**Status:** actively maintained documentation repository. It ships no runnable service —
+every diagram is a static, hand-authored HTML/SVG file — and its accuracy is enforced by an
+automated consistency gate (`_tooling/validate.py`) that runs in CI against the current
+source of the repositories it describes. This is a capstone/research project, not a
+commercial product; see "Known limitations" below for what the set deliberately does not
+cover.
 
 The governing contract for this set is [`DIAGRAM_SPECIFICATION.md`](DIAGRAM_SPECIFICATION.md).
 Read it before changing any diagram. It records the source-of-truth hierarchy, the
 terminology, the consistency rules every diagram obeys, the assumptions, and the ten
 discrepancies found between the repositories' documentation and their implementation.
+
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the actual (hand-authored, no-DSL) diagram
+workflow, [`SECURITY.md`](SECURITY.md) for how to report a security concern, and
+[`LICENSE`](LICENSE) (MIT) for the terms this repository is distributed under.
 
 ---
 
@@ -254,3 +265,43 @@ Full list: `DIAGRAM_SPECIFICATION.md` §10.
 | Presentation or demo | System context, high-level architecture, investigation scenario, response sequence |
 | Onboarding a new contributor | Component, then the two class models, then the telemetry collection sequence |
 | Defending the response boundary | Response sequence, then `DIAGRAM_SPECIFICATION.md` §9 row 1 |
+
+---
+
+## Related repositories
+
+This repository is the canonical, versioned diagram source for the Panopticon&Co platform
+and is referenced from the other repositories' own documentation. It diagrams:
+
+- [`panopticon-agent`](https://github.com/Panopticon-Co/panopticon-agent) — the Windows
+  endpoint agent, "Officer"
+- [`panopticon-linux-agent`](https://github.com/Panopticon-Co/panopticon-linux-agent) — the
+  Linux endpoint agent (its host-isolation path appears in the network-ingestion diagram's
+  scope notes; it is not yet drawn as its own component)
+- [`panopticon-detection-engine`](https://github.com/Panopticon-Co/panopticon-detection-engine)
+  — the detection/correlation/alerting engine, "eyedetect"
+- [`panopticon-response-engine`](https://github.com/Panopticon-Co/panopticon-response-engine)
+  — the closed seven-action response domain package, vendored into Manager
+- [`panopticon-manager`](https://github.com/Panopticon-Co/panopticon-manager) — the FastAPI
+  backend: ingestion, authorization, dispatch, lifecycle, and audit
+- [`panopticon-console`](https://github.com/Panopticon-Co/panopticon-console) — the read-only
+  alert dashboard
+
+Organization: [Panopticon-Co](https://github.com/Panopticon-Co)
+
+Nothing in this repository is imported by any of those repositories' builds; the dependency
+runs the other way, as explained above.
+
+---
+
+## Contributing, security, and license
+
+- **Contributing:** see [`CONTRIBUTING.md`](CONTRIBUTING.md) for the actual diagram workflow
+  — there is no diagram-DSL compiler here, only hand-authored HTML/SVG plus the two export
+  scripts and the consistency validator described above.
+- **Security:** see [`SECURITY.md`](SECURITY.md). Report privately via
+  [GitHub Security Advisories](https://github.com/Panopticon-Co/panopticon-diagrams/security/advisories/new),
+  never via a public issue.
+- **Code of conduct:** see [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) (Contributor
+  Covenant v2.1).
+- **License:** [MIT](LICENSE).
