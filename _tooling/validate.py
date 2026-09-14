@@ -106,7 +106,7 @@ n_ops = len(re.findall(r'"\w+":', ops.group(1))) if ops else 0
 check("OPERATOR COUNT", n_ops == 13, "found " + str(n_ops) + ", diagrams say 13")
 check("SCHEMA VERSION CONST", 'kSchemaVersion[] = "0.3"' in agent_src, "")
 check("AGENT VERSION CONST", 'kAgentVersion[] = "0.3.0"' in agent_src, "")
-check("ENGINE ACCEPTS 0.1-0.3", '("0.1", "0.2", "0.3")' in engine_src, "")
+check("ENGINE ACCEPTS 0.1-0.4", '("0.1", "0.2", "0.3", "0.4")' in engine_src, "")
 check("QUEUE DEFAULT 1024", "default=1024" in engine_src, "")
 check("CONSOLE POLL 3000MS", "POLL_INTERVAL_MS = 3000" in console_src, "")
 check("CONSOLE PORT 8787", "8787" in console_src, "")

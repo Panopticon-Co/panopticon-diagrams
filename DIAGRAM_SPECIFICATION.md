@@ -294,9 +294,10 @@ File naming: `panopticon-<subject>.html`, kebab-case, matching the `<title>` slu
    which of the two.
 7. **Every class and member named in a class diagram exists in source.** Members are
    selected, never invented; omission is allowed, invention is not.
-8. **Schema version is 0.3 everywhere.** The agent emits 0.3; the engine accepts 0.1, 0.2
-   and 0.3. Diagrams showing agent output say 0.3, and diagrams showing the engine's
-   accepted range say the range.
+8. **Schema version is 0.3 everywhere for the Windows agent.** The Windows agent emits
+   0.3; the Linux agent emits 0.4 (structurally identical envelope); the engine accepts
+   0.1, 0.2, 0.3, and 0.4. Diagrams showing agent output say the emitting agent's actual
+   version, and diagrams showing the engine's accepted range say the full range.
 9. **Counts are stated once and consistently:** 92 rules, 16 rule domains, 5 telemetry
    families, 7 detection stages (A to G), 4 console routes, 13 comparison operators.
 
