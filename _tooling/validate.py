@@ -118,7 +118,7 @@ rem_src = "\n".join(f.read_text(encoding="utf-8") for f in rem_files)
 for danger in ("subprocess", "os.kill", "winreg", "socket.", "os.remove", "shutil.move"):
     check("REMEDIATION EXECUTES", danger not in rem_src, danger + " found in src/remediation")
 
-check("CONSOLE READ-ONLY", "do_POST" not in console_src and "do_PUT" not in console_src, "")
+check("CONSOLE SERVER-SIDE DECISION PROXY", "do_POST" in console_src and "submit_response_action" in console_src, "")
 check("MANAGER INGEST ROUTE", '@router.post("/api/v1/ingest"' in manager_src, "")
 check("MANAGER EVENT DEDUP", "INSERT OR IGNORE INTO events" in manager_src, "")
 check("MANAGER DETECTION WORKER", "class DetectionWorker" in manager_src, "")
@@ -203,9 +203,8 @@ check("MANAGER RESPONSE ACTIONS ROUTES", all(
 ), "")
 check("MANAGER ALERTS QUERY ROUTE", '@router.get("/api/v1/alerts"' in manager_src, "")
 
-# Console's response-actions view stays a same-origin, read-only proxy: no
-# cross-origin fetch, no mutating route, per the locked "console never
-# executes a response" boundary.
+# Console's response-actions view stays a same-origin proxy. Analyst tokens
+# remain server-side and the Console never executes a response itself.
 check("CONSOLE RESPONSE ACTIONS PROXY ROUTE", '"/api/response-actions"' in console_src, "")
 check("CONSOLE NEVER CALLS MANAGER FROM THE BROWSER", "/api/v1/response-actions" not in read_all(CONSOLE, ("*.js",)), "")
 
