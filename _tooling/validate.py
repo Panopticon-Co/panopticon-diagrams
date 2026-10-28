@@ -12,9 +12,10 @@ ENGINE = WORKSPACE / "panopticon-detection-engine"
 CONSOLE = WORKSPACE / "panopticon-console"
 MANAGER = WORKSPACE / "panopticon-manager"
 LINUX_AGENT = WORKSPACE / "panopticon-linux-agent"
+RESPONSE_ENGINE = WORKSPACE / "panopticon-response-engine"
 SKIP = (".git", ".venv", "build-officer-x64", "build", "__pycache__", ".pytest_cache", "vendor")
 
-missing = [str(p) for p in (AGENT, MANAGER, ENGINE, CONSOLE, LINUX_AGENT) if not p.is_dir()]
+missing = [str(p) for p in (AGENT, MANAGER, ENGINE, CONSOLE, LINUX_AGENT, RESPONSE_ENGINE) if not p.is_dir()]
 if missing:
     print("validate.py needs the five source repositories checked out beside this one:")
     for p in missing:
@@ -39,7 +40,8 @@ engine_src = read_all(ENGINE, ("*.py",))
 console_src = read_all(CONSOLE, ("*.py", "*.js"))
 manager_src = read_all(MANAGER, ("*.py",))
 linux_agent_src = read_all(LINUX_AGENT, ("*.hpp", "*.cpp", "CMakeLists.txt"))
-all_src = agent_src + manager_src + engine_src + console_src + linux_agent_src
+response_engine_src = read_all(RESPONSE_ENGINE, ("*.py",))
+all_src = agent_src + manager_src + engine_src + console_src + linux_agent_src + response_engine_src
 schema = json.loads((AGENT / "schema" / "event.schema.json").read_text(encoding="utf-8"))
 fails = []
 checks = [0]
@@ -57,19 +59,19 @@ IDENTIFIERS = [
  "derive_process_event_id","derive_process_context_entity_id","officer-core",
  "officer-collectors","officer-agent","officer-query",
  "DetectionRun","RuleEvaluator","ConditionMatcher","DetectionResult","Alert","LogicNode",
- "Condition","Rule","ProcessTree","ThreatIntelEngine","ThresholdEngine","CorrelationEngine",
- "EntityRiskScorer","C2BeaconDetector","PortScanDetector","RansomwareShield",
- "IdentityAnalyticsEngine","CloudThreatEngine","EnterpriseAttackGraph",
- "EndpointRemediationEngine","RemediationAction","ActiveResponseEngine","ActiveResponseAction",
+ "Condition","Rule","ProvenanceGraph","EventGraphBuilder","ProcessRegistry",
+ "ProcessIncarnation","IncidentTracker","EntityRiskScorer","C2BeaconDetector","RarityDetector",
+ "DnsAnalyzer","ActiveResponseEngine","ActiveResponseAction","Command","Tier",
+ "classify_tier","translate_recommendation","DetectionWorker","authorize_response_action",
+ "reject_response_action","expire_stale_response_actions",
  "BoundedEventQueue","StreamingPipeline","AlertSpool","IncrementalAlertWriter","RetryPolicy",
  "HealthState","Metrics","OfficerIngestionAdapter","LiveTelemetryStream",
  "process_event","evaluate_event","set_rules","from_detection_result","to_dict",
  "claim_deliverable","mark_delivered","mark_failed","requeue_dead","already_delivered",
  "transform_officer_event","stream_from_officer_process","stream_from_file",
- "_rules_by_type","_matched_rules_history","_evaluate_logic_node","_extract_evidence",
- "matched_evidence","active_response","auto_remediate","action_history","nodes_by_guid",
- "active_pids","get_ancestors","has_ancestor","next_attempt_at","alert_id","threat_intel",
- "process_tree","threshold_engine","correlation_engine","remediate_threat","resolve_action",
+ "evaluate_logic","match_condition","collect_evidence",
+ "matched_evidence","active_response","_timeline","observe_start","ancestors",
+ "lineage","_by_node_id","next_attempt_at","alert_id","resolve_action",
 ]
 for ident in IDENTIFIERS:
     check("MISSING IDENTIFIER", ident in all_src, ident)
@@ -98,25 +100,25 @@ check("STRICT SCHEMA", schema.get("additionalProperties") is False, "")
 check("PROCESS ALWAYS REQUIRED", "process" in schema["required"], "")
 
 n_rules = len(list((ENGINE / "rules").rglob("*.yaml")))
-check("RULE COUNT", n_rules == 92, "found " + str(n_rules) + ", diagrams say 92")
+check("RULE COUNT", n_rules == 74, "found " + str(n_rules) + ", diagrams say 74")
 n_domains = len([d for d in (ENGINE / "rules").iterdir() if d.is_dir()])
-check("RULE DOMAIN COUNT", n_domains == 16, "found " + str(n_domains) + ", spec says 16")
+check("RULE DOMAIN COUNT", n_domains == 17, "found " + str(n_domains) + ", spec says 17")
 ops = re.search(r"OPERATOR_MAP\s*=\s*\{(.*?)\}", engine_src, re.S)
 n_ops = len(re.findall(r'"\w+":', ops.group(1))) if ops else 0
-check("OPERATOR COUNT", n_ops == 13, "found " + str(n_ops) + ", diagrams say 13")
+check("OPERATOR COUNT", n_ops == 14, "found " + str(n_ops) + ", diagrams say 14")
 check("SCHEMA VERSION CONST", 'kSchemaVersion[] = "0.3"' in agent_src, "")
 check("AGENT VERSION CONST", 'kAgentVersion[] = "0.3.0"' in agent_src, "")
-check("ENGINE ACCEPTS 0.1-0.4", '("0.1", "0.2", "0.3", "0.4")' in engine_src, "")
+check("ENGINE ACCEPTS 0.1-0.5", '("0.1", "0.2", "0.3", "0.4", "0.5")' in engine_src, "")
 check("QUEUE DEFAULT 1024", "default=1024" in engine_src, "")
 check("CONSOLE POLL 3000MS", "POLL_INTERVAL_MS = 3000" in console_src, "")
 check("CONSOLE PORT 8787", "8787" in console_src, "")
 for s in ("PENDING","DELIVERED","DEAD"):
     check("SPOOL STATE", 'STATUS_' + s + ' = "' + s.lower() + '"' in engine_src, s)
 
-rem_files = [f for f in (ENGINE / "src" / "remediation").rglob("*.py") if "__pycache__" not in f.parts]
+rem_files = [f for f in (ENGINE / "panopticon_detection" / "alerting").rglob("*.py") if "__pycache__" not in f.parts]
 rem_src = "\n".join(f.read_text(encoding="utf-8") for f in rem_files)
 for danger in ("subprocess", "os.kill", "winreg", "socket.", "os.remove", "shutil.move"):
-    check("REMEDIATION EXECUTES", danger not in rem_src, danger + " found in src/remediation")
+    check("REMEDIATION EXECUTES", danger not in rem_src, danger + " found in alerting")
 
 check("CONSOLE SERVER-SIDE DECISION PROXY", "do_POST" in console_src and "submit_response_action" in console_src, "")
 check("MANAGER INGEST ROUTE", '@router.post("/api/v1/ingest"' in manager_src, "")

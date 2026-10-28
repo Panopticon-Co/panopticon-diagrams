@@ -115,7 +115,7 @@ CMake targets: `officer-core` (static), `officer-collectors` (static), `officer-
 | `BoundedEventQueue` | Bounded FIFO with block / drop_newest / drop_oldest overflow | `src/reliability/queue.py` |
 | `StreamingPipeline` | Producer thread, consumer thread, restart recovery, deterministic shutdown | `src/reliability/pipeline.py` |
 | `DetectionRun` | Per-event driver running detection stages A to G | `src/pipeline_core.py` |
-| `RuleEvaluator` and `ConditionMatcher` | Rule routing by `event_type`, boolean logic tree, 13 comparison operators plus 3 special operators | `src/evaluator/` |
+| `RuleEvaluator` and `ConditionMatcher` | Rule routing by `event_type`, boolean logic tree, 14 comparison operators plus 3 special operators | `src/evaluator/` |
 | `ProcessTree` | Stateful process lineage and ancestry | `src/correlation/process_tree.py` |
 | `CorrelationEngine`, `EntityRiskScorer`, `EnterpriseAttackGraph` | Multi-event correlation, risk accumulation, campaign graph | `src/correlation/` |
 | `ThresholdEngine`, `C2BeaconDetector`, `PortScanDetector`, `RansomwareShield`, `IdentityAnalyticsEngine`, `CloudThreatEngine` | Behavioural detectors for stages B to G | various |
@@ -125,7 +125,7 @@ CMake targets: `officer-core` (static), `officer-collectors` (static), `officer-
 | `EndpointRemediationEngine` | **Simulated** — records `RemediationAction` objects and executes nothing | `src/remediation/engine.py` |
 | `HealthState`, `Metrics` | JSON health snapshot and Prometheus-text metrics, both written on exit | `src/reliability/` |
 
-Rule corpus: **92 YAML files** across 16 directories (`cloud`, `collection`,
+Rule corpus: **74 YAML files** across 17 directories (`cloud`, `collection`,
 `credential_access`, `defense_evasion`, `exfiltration`, `file`, `identity`,
 `initial_access`, `lateral_movement`, `linux_process`, `malware`, `network`,
 `persistence`, `privilege_escalation`, `process`, `web_api`). `linux_process`
@@ -296,10 +296,10 @@ File naming: `panopticon-<subject>.html`, kebab-case, matching the `<title>` slu
    selected, never invented; omission is allowed, invention is not.
 8. **Schema version is 0.3 everywhere for the Windows agent.** The Windows agent emits
    0.3; the Linux agent emits 0.4 (structurally identical envelope); the engine accepts
-   0.1, 0.2, 0.3, and 0.4. Diagrams showing agent output say the emitting agent's actual
+   0.1, 0.2, 0.3, 0.4, and 0.5. Diagrams showing agent output say the emitting agent's actual
    version, and diagrams showing the engine's accepted range say the full range.
-9. **Counts are stated once and consistently:** 92 rules, 16 rule domains, 5 telemetry
-   families, 7 detection stages (A to G), 4 console routes, 13 comparison operators.
+9. **Counts are stated once and consistently:** 74 rules, 17 rule domains, 5 telemetry
+   families, 7 detection stages (A to G), 4 console routes, 14 comparison operators.
 
 ---
 
@@ -363,7 +363,7 @@ case below and mark the affected element accordingly.
 | 1 | "Automated Process Kill / Quarantine"; "Active Response / Process Termination Playbooks" | `docs/OFFICER_INTEGRATION.md`, engine `README.md` | `EndpointRemediationEngine` builds `RemediationAction` dataclasses and appends them to `action_history`. There is no `subprocess`, `os.kill`, `winreg` or socket call anywhere in `src/remediation/`. Response is **simulated bookkeeping**. |
 | 2 | Remediation status is `"SUCCESS"` when `dry_run=False`, and `main.py` constructs `EndpointRemediationEngine(dry_run=False)` | `src/remediation/engine.py`, `src/main.py` | The label says SUCCESS while nothing executes. The honest status for every action in the current build is SIMULATED. Diagrams use the `SIMULATED` tag. |
 | 3 | "Unbuffered NDJSON Pipe / Named Pipe"; the `LiveTelemetryStream` docstring says "subprocess, Named Pipe, or NDJSON file" | `docs/OFFICER_INTEGRATION.md`, `src/ingestion/live_stream.py` | Only two paths exist: `stream_from_file` and `stream_from_officer_process`. There is **no named-pipe implementation**. |
-| 4 | "Schema 0.2" as the integration contract | `OFFICER_INTEGRATION.md` heading and body | The agent emits `schema_version` **0.3** (`kSchemaVersion` in `panopticon_event.hpp`) and the engine accepts `("0.1","0.2","0.3")`. The document's example payload is a valid but outdated 0.2 record. |
+| 4 | "Schema 0.2" as the integration contract | `OFFICER_INTEGRATION.md` heading and body | The agent emits `schema_version` **0.3** (`kSchemaVersion` in `panopticon_event.hpp`) and the engine accepts `("0.1","0.2","0.3","0.4","0.5")`. The document's example payload is a valid but outdated 0.2 record. |
 | 5 | "84+ Wazuh/Sigma Rules"; "Tests: 43 Passed" badge | engine `README.md` | Actual: **92** rule YAML files and **161 passed, 2 skipped**. The badges are stale. |
 | 6 | Root `CLAUDE.md`: `--auto-remediate` "is `store_true, default=True` with no counterpart — impossible to disable" | root `CLAUDE.md` against `src/main.py` | Already fixed. The flag now uses `argparse.BooleanOptionalAction`, so `--no-auto-remediate` works. |
 | 7 | Root `CLAUDE.md` describes a two-repository workspace, process-creation-only telemetry and Schema 0.2 | root `CLAUDE.md` | Stale. There are **three** repositories (the console exists), **five** telemetry families, and Schema **0.3**. |
@@ -378,7 +378,7 @@ case below and mark the affected element accordingly.
 - **No runtime performance data is depicted.** The known agent event-loss behaviour under
   high Sysmon event ID 1 rates (agent `V3_TELEMETRY.md` §9) is a reliability property, not
   a structural one, and is noted in the README rather than drawn.
-- **The 92 rules are represented by their structure, not enumerated.** A rule catalogue is
+- **The 74 rules are represented by their structure, not enumerated.** A rule catalogue is
   a table, not a diagram.
 - **ARM64 is not drawn separately.** The build is triplet-driven and structurally
   identical; only the validated x64 path is shown, with the ARM64 status noted.

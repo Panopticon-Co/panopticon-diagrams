@@ -208,9 +208,9 @@ python _tooling/export_png.py . 2      # writes every .png at 2x
 ## Verifying the set
 
 [`_tooling/validate.py`](_tooling/validate.py) is the automated consistency gate. It runs
-292 checks against the three source repositories and fails loudly on any drift. It expects
+386 checks against the three source repositories and fails loudly on any drift. It expects
 `panopticon-agent`, `panopticon-detection-engine` and `panopticon-console` checked out as
-siblings of this repository — clone all four Panopticon-Co repositories into one parent
+siblings of this repository — clone all Panopticon-Co repositories into one parent
 directory and it finds them automatically:
 
 ```bash
@@ -226,7 +226,7 @@ PANOPTICON_WORKSPACE=/path/to/that/parent/directory python _tooling/validate.py
 It verifies that every one of the 88 class, method and attribute names asserted anywhere in
 the set exists in source; that every schema field named in the data-model diagram exists in
 `event.schema.json` with the stated enum and nullability; that the stated counts still hold
-(92 rules, 16 rule domains, 13 comparison operators, queue capacity 1024, poll interval
+(74 rules, 17 rule domains, 14 comparison operators, queue capacity 1024, poll interval
 3000 ms, port 8787); that the three spool status constants are unchanged; that
 `src/remediation/` still contains no `subprocess`, `os.kill`, `winreg` or socket call, which
 is what makes the response diagrams true; that the console still has no `do_POST` or
@@ -242,7 +242,7 @@ build of this set, a rule-domain count that was off by one.
 
 - **No performance data is drawn.** The agent's documented event-loss behaviour under very
   high Sysmon event-ID-1 rates is a reliability property, not a structural one.
-- **The 92 rules are represented structurally, not enumerated.** A rule catalogue is a
+- **The 74 rules are represented structurally, not enumerated.** A rule catalogue is a
   table.
 - **ARM64 is not drawn separately.** The build is triplet-driven and structurally identical;
   only the validated x64 path is shown.

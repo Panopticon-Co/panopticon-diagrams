@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg viewBox="0 0 1120 872" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pan-seq-title pan-seq-desc">
-      <title id="pan-seq-title">Panopticon ingest and detection sequence</title>
-      <desc id="pan-seq-desc">The Officer uploader posts an NDJSON batch to the ingest API, which commits the events to SQLite and acknowledges with 200 before any detection happens; separately and later, the detection worker claims pending rows and loops over each one, driving DetectionRun, persisting emitted alerts and marking the event done.</desc>
-      <defs>
-  <style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap');</style>
+<svg viewBox="0 0 1240 960" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pan-seq-title pan-seq-desc">
+      <title id="pan-seq-title">Panopticon end-to-end ingest, detection and response sequence</title>
+      <desc id="pan-seq-desc">Endpoint uploader posts telemetry to Ingest API, committed and acknowledged with 200 before detection runs. The Detection Worker claims pending events and drives DetectionRun to persist alerts and stage response actions. Analysts authorize actions via Console, dispatching typed commands to endpoint executors.</desc>
+      <defs><style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap');</style>
         <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
         <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/></marker>
         <marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2e5aa8"/></marker>
@@ -12,120 +11,183 @@
       <rect width="100%" height="100%" fill="#f5f5f5"/>
 
       <!-- ===== LIFELINES ===== -->
-      <line class="lifeline" x1="128" y1="160" x2="128" y2="760" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
-      <line class="lifeline" x1="344" y1="160" x2="344" y2="760" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
-      <line class="lifeline" x1="560" y1="160" x2="560" y2="760" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
-      <line class="lifeline" x1="776" y1="160" x2="776" y2="760" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
-      <line class="lifeline" x1="992" y1="160" x2="992" y2="760" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+      <!-- L1: Endpoint Agent -->
+      <line x1="120" y1="160" x2="120" y2="850" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+      <!-- L2: Manager API -->
+      <line x1="330" y1="160" x2="330" y2="850" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+      <!-- L3: panopticon.db (WAL) -->
+      <line x1="530" y1="160" x2="530" y2="850" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+      <!-- L4: Detection Worker -->
+      <line x1="730" y1="160" x2="730" y2="850" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+      <!-- L5: Detection Core -->
+      <line x1="930" y1="160" x2="930" y2="850" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+      <!-- L6: SOC Analyst / Console -->
+      <line x1="1120" y1="160" x2="1120" y2="850" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
 
-      <!-- ===== LOOP FRAGMENT ===== -->
-      <rect class="frame" x="536" y="528" width="488" height="192" rx="4" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.22)" stroke-width="1"/>
-      <rect class="frame" x="536" y="528" width="48" height="16" rx="2" fill="#f5f5f5" stroke="rgba(45,49,66,0.22)" stroke-width="1"/>
-      <text x="560" y="540" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">LOOP</text>
-      <text x="572" y="560" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.04em">[for each claimed event]</text>
+      <!-- ===== PHASE 1: INGEST ===== -->
+      <rect x="116" y="200" width="8" height="136" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
+      <rect x="326" y="200" width="8" height="136" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
+      <rect x="526" y="240" width="8" height="48" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
 
-      <!-- ===== ACTIVATION BARS ===== -->
-      <rect class="decor" x="124" y="208" width="8" height="160" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
-      <rect class="decor" x="340" y="208" width="8" height="160" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
-      <rect class="decor" x="556" y="264" width="8" height="56" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
-      <rect class="decor" x="556" y="448" width="8" height="56" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
-      <rect class="decor" x="556" y="608" width="8" height="108" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
-      <rect class="decor" x="772" y="448" width="8" height="272" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
-      <rect class="decor" x="988" y="576" width="8" height="96" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
+      <!-- m1: POST /api/v1/ingest -->
+      <line x1="124" y1="208" x2="326" y2="208" stroke="#2e5aa8" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <rect x="168" y="190" width="112" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="224" y="199" fill="#2e5aa8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">POST /api/v1/ingest</text>
 
-      <!-- ===== PHASE DIVIDER ===== -->
-      <line class="decor" x1="40" y1="408" x2="1080" y2="408" stroke="rgba(45,49,66,0.16)" stroke-width="0.8" stroke-dasharray="2,4"/>
-      <rect x="160" y="388" width="160" height="12" rx="2" fill="#f5f5f5"/>
-      <text x="240" y="397" fill="rgba(45,49,66,0.45)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">ASYNCHRONOUS &#183; LATER</text>
+      <!-- m2: Commit Events -->
+      <line x1="334" y1="248" x2="526" y2="248" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="376" y="230" width="104" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="428" y="239" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">INSERT OR IGNORE</text>
 
-      <!-- ===== MESSAGES ===== -->
-      <!-- m1 -->
-      <line x1="132" y1="216" x2="340" y2="216" stroke="#2e5aa8" stroke-width="1.2" marker-end="url(#arrow-link)"/>
-      <rect x="180" y="196" width="112" height="12" rx="2" fill="#f5f5f5"/>
-      <text x="236" y="205" fill="#2e5aa8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">POST /api/v1/ingest</text>
-      <!-- m2 -->
-      <line x1="348" y1="272" x2="556" y2="272" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
-      <rect x="404" y="252" width="96" height="12" rx="2" fill="#f5f5f5"/>
-      <text x="452" y="261" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">INSERT OR IGNORE</text>
-      <!-- m3 -->
-      <line x1="556" y1="312" x2="348" y2="312" stroke="#4f5d75" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
-      <rect x="428" y="292" width="48" height="12" rx="2" fill="#f5f5f5"/>
-      <text x="452" y="301" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">ROWCOUNT</text>
-      <!-- m4  headline ack -->
-      <line x1="340" y1="360" x2="132" y2="360" stroke="#eb6c36" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
-      <rect x="200" y="340" width="72" height="12" rx="2" fill="#f5f5f5"/>
-      <text x="236" y="349" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">200 ACCEPTED</text>
-      <!-- m5 -->
-      <line x1="772" y1="456" x2="564" y2="456" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
-      <rect x="624" y="436" width="80" height="12" rx="2" fill="#f5f5f5"/>
-      <text x="664" y="445" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">CLAIM_BATCH()</text>
-      <!-- m6 -->
-      <line x1="564" y1="496" x2="772" y2="496" stroke="#4f5d75" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
-      <rect x="632" y="476" width="72" height="12" rx="2" fill="#f5f5f5"/>
-      <text x="668" y="485" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">PENDING ROWS</text>
-      <!-- m7 -->
-      <line x1="780" y1="584" x2="988" y2="584" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
-      <rect x="832" y="564" width="96" height="12" rx="2" fill="#f5f5f5"/>
-      <text x="880" y="573" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">PROCESS_EVENT()</text>
-      <!-- m8 -->
-      <line x1="988" y1="624" x2="564" y2="624" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
-      <rect x="612" y="604" width="104" height="12" rx="2" fill="#f5f5f5"/>
-      <text x="664" y="613" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">EMIT: INSERT ALERT</text>
-      <!-- m9 -->
-      <line x1="988" y1="664" x2="780" y2="664" stroke="#4f5d75" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
-      <rect x="856" y="644" width="48" height="12" rx="2" fill="#f5f5f5"/>
-      <text x="880" y="653" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">ALERTS[]</text>
-      <!-- m10 -->
-      <line x1="772" y1="704" x2="564" y2="704" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
-      <rect x="640" y="684" width="56" height="12" rx="2" fill="#f5f5f5"/>
-      <text x="668" y="693" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">MARK DONE</text>
+      <!-- m3: Rowcount ack -->
+      <line x1="526" y1="284" x2="334" y2="284" stroke="#4f5d75" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <rect x="404" y="266" width="48" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="428" y="275" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">COMMITTED</text>
 
-      <!-- ===== CALLOUT ===== -->
-      <text x="56" y="520" fill="#2d3142" font-size="14" font-style="italic" font-family="'Instrument Serif', serif">The 200 is already sent &#8212; detection</text>
-      <text x="56" y="540" fill="#2d3142" font-size="14" font-style="italic" font-family="'Instrument Serif', serif">is a separate transaction and thread.</text>
-      <path d="M 140 504 Q 150 458 172 414" fill="none" stroke="rgba(45,49,66,0.40)" stroke-width="1" stroke-dasharray="4,3"/>
-      <circle cx="172" cy="410" r="2" fill="#2d3142"/>
+      <!-- m4: 200 Ack (Ack precedes detection) -->
+      <line x1="326" y1="320" x2="124" y2="320" stroke="#eb6c36" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+      <rect x="184" y="302" width="80" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="224" y="311" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">200 ACCEPTED</text>
+
+      <!-- ===== DIVIDER 1 ===== -->
+      <line x1="40" y1="356" x2="1200" y2="356" stroke="rgba(45,49,66,0.16)" stroke-width="0.8" stroke-dasharray="2,4"/>
+      <rect x="160" y="344" width="180" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="250" y="353" fill="rgba(45,49,66,0.50)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">ASYNCHRONOUS CLAIM &amp; DETECT</text>
+
+      <!-- ===== PHASE 2: DETECTION & STAGING ===== -->
+      <rect x="726" y="380" width="8" height="240" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
+      <rect x="526" y="380" width="8" height="40" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
+      <rect x="926" y="450" width="8" height="100" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
+      <rect x="526" y="470" width="8" height="120" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
+
+      <!-- Loop fragment -->
+      <rect x="506" y="434" width="450" height="170" rx="4" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.22)" stroke-width="1"/>
+      <rect x="506" y="434" width="48" height="16" rx="2" fill="#f5f5f5" stroke="rgba(45,49,66,0.22)" stroke-width="1"/>
+      <text x="530" y="446" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">LOOP</text>
+      <text x="542" y="464" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.04em">[for each event in claimed batch]</text>
+
+      <!-- m5: CLAIM_BATCH -->
+      <line x1="726" y1="392" x2="534" y2="392" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="592" y="374" width="80" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="632" y="383" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">CLAIM_BATCH()</text>
+
+      <!-- m6: PENDING ROWS -->
+      <line x1="534" y1="416" x2="726" y2="416" stroke="#4f5d75" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <rect x="596" y="404" width="72" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="632" y="413" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">PENDING ROWS</text>
+
+      <!-- m7: PROCESS_EVENT -->
+      <line x1="734" y1="480" x2="926" y2="480" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="792" y="462" width="96" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="840" y="471" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">PROCESS_EVENT()</text>
+
+      <!-- m8: INSERT ALERT & INCIDENT -->
+      <line x1="926" y1="504" x2="534" y2="504" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="672" y="492" width="112" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="728" y="501" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">INSERT ALERT / INCIDENT</text>
+
+      <!-- m9: STAGE RESPONSE RECOMMENDATION -->
+      <line x1="926" y1="536" x2="534" y2="536" stroke="#eb6c36" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+      <rect x="668" y="524" width="136" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="736" y="533" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">STAGE RESPONSE (PENDING)</text>
+
+      <!-- m10: MARK DONE -->
+      <line x1="726" y1="584" x2="534" y2="584" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="604" y="568" width="56" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="632" y="577" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">MARK DONE</text>
+
+      <!-- ===== DIVIDER 2 ===== -->
+      <line x1="40" y1="632" x2="1200" y2="632" stroke="rgba(45,49,66,0.16)" stroke-width="0.8" stroke-dasharray="2,4"/>
+      <rect x="160" y="620" width="220" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="270" y="629" fill="rgba(45,49,66,0.50)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">CLOSED-LOOP AUTHORIZATION &amp; DISPATCH</text>
+
+      <!-- ===== PHASE 3: AUTHORIZATION & EXECUTION ===== -->
+      <rect x="1116" y="660" width="8" height="72" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
+      <rect x="326" y="660" width="8" height="170" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
+      <rect x="526" y="680" width="8" height="50" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
+      <rect x="116" y="740" width="8" height="80" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
+      <rect x="526" y="800" width="8" height="30" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
+
+      <!-- m11: Authorize Action -->
+      <line x1="1116" y1="672" x2="334" y2="672" stroke="#eb6c36" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+      <rect x="680" y="656" width="168" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="764" y="665" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">POST /api/v1/response-actions/authorize</text>
+
+      <!-- m12: Create Command Row -->
+      <line x1="334" y1="700" x2="526" y2="700" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="390" y="686" width="104" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="442" y="695" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">ENQUEUE COMMAND ROW</text>
+
+      <!-- m13: Poll Commands -->
+      <line x1="124" y1="748" x2="326" y2="748" stroke="#eb6c36" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+      <rect x="176" y="734" width="104" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="228" y="743" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">GET /api/v1/commands</text>
+
+      <!-- m14: Return Command -->
+      <line x1="326" y1="772" x2="124" y2="772" stroke="#4f5d75" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <rect x="168" y="758" width="120" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="228" y="767" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">COMMAND (ACTION, TARGET)</text>
+
+      <!-- m15: Execute and Post Result -->
+      <line x1="124" y1="810" x2="326" y2="810" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="176" y="796" width="112" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="232" y="805" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">POST /commands/result</text>
+
+      <!-- m16: Update Command Status to SUCCEEDED -->
+      <line x1="334" y1="824" x2="526" y2="824" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="388" y="812" width="104" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="440" y="821" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">UPDATE SUCCEEDED</text>
 
       <!-- ===== ACTOR BOXES ===== -->
-      <rect x="40" y="96" width="176" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
-      <text x="128" y="124" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Officer Uploader</text>
-      <text x="128" y="142" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">panopticon-agent</text>
+      <!-- Box 1: Endpoint Agent -->
+      <rect x="40" y="96" width="160" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="120" y="124" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Endpoint Agent</text>
+      <text x="120" y="142" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">Windows / Linux</text>
 
-      <rect x="256" y="96" width="176" height="64" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
-      <text x="344" y="124" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Ingest API</text>
-      <text x="344" y="142" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">/api/v1/ingest</text>
+      <!-- Box 2: Manager API -->
+      <rect x="250" y="96" width="160" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="330" y="124" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Manager API</text>
+      <text x="330" y="142" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">/ingest &#183; /commands</text>
 
-      <rect x="472" y="96" width="176" height="64" rx="6" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="1"/>
-      <text x="560" y="124" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">panopticon.db</text>
-      <text x="560" y="142" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">SQLite &#183; WAL</text>
+      <!-- Box 3: panopticon.db -->
+      <rect x="450" y="96" width="160" height="64" rx="6" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="1"/>
+      <text x="530" y="124" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">panopticon.db</text>
+      <text x="530" y="142" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">SQLite WAL</text>
 
-      <rect x="688" y="96" width="176" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
-      <text x="776" y="124" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Detection Worker</text>
-      <text x="776" y="142" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">one thread</text>
+      <!-- Box 4: Detection Worker -->
+      <rect x="650" y="96" width="160" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="730" y="124" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Detection Worker</text>
+      <text x="730" y="142" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">claim thread</text>
 
-      <rect x="904" y="96" width="176" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
-      <text x="992" y="124" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">DetectionRun</text>
-      <text x="992" y="142" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">vendor/eyedetect</text>
+      <!-- Box 5: Detection Core -->
+      <rect x="850" y="96" width="160" height="64" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <text x="930" y="124" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Detection Core</text>
+      <text x="930" y="142" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">eyedetect engine</text>
+
+      <!-- Box 6: SOC Analyst -->
+      <rect x="1040" y="96" width="160" height="64" rx="6" fill="rgba(79,93,117,0.10)" stroke="#7a8399" stroke-width="1"/>
+      <text x="1120" y="124" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">SOC Analyst</text>
+      <text x="1120" y="142" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">Console UI @ :8787</text>
 
       <!-- ===== LEGEND ===== -->
-      <line class="legend" x1="40" y1="792" x2="1080" y2="792" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
-      <text x="40" y="812" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGEND</text>
+      <line x1="40" y1="880" x2="1200" y2="880" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <text x="40" y="900" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGEND</text>
 
-      <line class="legend" x1="40" y1="836" x2="64" y2="836" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
-      <text x="74" y="839" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">CALL (SYNC)</text>
+      <line x1="40" y1="924" x2="64" y2="924" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <text x="74" y="927" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">SYNC CALL / WRITE</text>
 
-      <line class="legend" x1="216" y1="836" x2="240" y2="836" stroke="#4f5d75" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
-      <text x="250" y="839" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">RETURN</text>
+      <line x1="220" y1="924" x2="244" y2="924" stroke="#4f5d75" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <text x="254" y="927" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">RETURN VALUE</text>
 
-      <line class="legend" x1="392" y1="836" x2="416" y2="836" stroke="#2e5aa8" stroke-width="1.2" marker-end="url(#arrow-link)"/>
-      <text x="426" y="839" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">HTTPS CALL</text>
+      <line x1="400" y1="924" x2="424" y2="924" stroke="#2e5aa8" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <text x="434" y="927" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">HTTPS INGEST</text>
 
-      <line class="legend" x1="568" y1="836" x2="592" y2="836" stroke="#eb6c36" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
-      <text x="602" y="839" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">HEADLINE ACK</text>
+      <line x1="580" y1="924" x2="604" y2="924" stroke="#eb6c36" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+      <text x="614" y="927" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">RESPONSE ACTION / 200 ACK</text>
 
-      <rect class="legend" x="748" y="828" width="8" height="16" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
-      <text x="770" y="839" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">ACTIVATION</text>
+      <rect x="800" y="916" width="8" height="16" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
+      <text x="822" y="927" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">ACTIVATION BAR</text>
 
-      <rect class="legend" x="920" y="828" width="24" height="16" rx="2" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.22)" stroke-width="1"/>
-      <text x="954" y="839" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">LOOP FRAGMENT</text>
+      <rect x="980" y="916" width="24" height="16" rx="2" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.22)" stroke-width="1"/>
+      <text x="1014" y="927" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">LOOP FRAGMENT</text>
     </svg>
