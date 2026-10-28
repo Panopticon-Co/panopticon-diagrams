@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1024 880" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pan-uml-title pan-uml-desc">
+      <title id="pan-uml-title">Panopticon telemetry class model</title>
+      <desc id="pan-uml-desc">Two packages: the C++ Officer agent, where EtwProcessCollector and SysmonEventCollector realize the TelemetryCollector interface and normalize into a PanopticonEvent record, and the Python detection engine, where OfficerIngestionAdapter transforms that record for DetectionRun, which composes the Alert objects it emits.</desc>
+      <defs>
+  <style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap');</style>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
+        <marker id="arrow-open" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polyline points="0 0, 8 3, 0 6" fill="none" stroke="#4f5d75" stroke-width="1.2"/></marker>
+        <marker id="tri-hollow" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto"><polygon points="0 0, 12 5, 0 10" fill="#f5f5f5" stroke="#2d3142" stroke-width="1"/></marker>
+        <marker id="tri-hollow-accent" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto"><polygon points="0 0, 12 5, 0 10" fill="#f5f5f5" stroke="#eb6c36" stroke-width="1"/></marker>
+        <marker id="diamond-filled" markerWidth="12" markerHeight="8" refX="1" refY="4" orient="auto"><polygon points="0 4, 6 0, 12 4, 6 8" fill="#2d3142"/></marker>
+        <marker id="diamond-hollow" markerWidth="12" markerHeight="8" refX="1" refY="4" orient="auto"><polygon points="0 4, 6 0, 12 4, 6 8" fill="#f5f5f5" stroke="#2d3142" stroke-width="1"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f5f5f5"/>
+
+      <!-- ===== PACKAGES ===== -->
+      <rect x="32" y="88" width="568" height="680" rx="8" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <rect x="48" y="92" width="144" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="120" y="101" fill="rgba(45,49,66,0.40)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">PANOPTICON-AGENT &#183; C++20</text>
+
+      <rect x="664" y="88" width="320" height="680" rx="8" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <rect x="680" y="92" width="152" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="756" y="101" fill="rgba(45,49,66,0.40)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">VENDOR/EYEDETECT &#183; PYTHON</text>
+
+      <!-- ===== RELATIONSHIPS (before boxes) ===== -->
+      <!-- R1 EtwProcessCollector ..|> TelemetryCollector -->
+      <path d="M 176,328 V 288 Q 176,280 184,280 H 248 Q 256,280 256,272 V 252" fill="none" stroke="#eb6c36" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#tri-hollow-accent)"/>
+      <!-- R2 SysmonEventCollector ..|> TelemetryCollector -->
+      <path d="M 456,328 V 288 Q 456,280 448,280 H 384 Q 376,280 376,272 V 252" fill="none" stroke="#eb6c36" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#tri-hollow-accent)"/>
+      <!-- R3 TelemetryCollector ..> PanopticonEvent -->
+      <line x1="316" y1="252" x2="316" y2="576" stroke="#4f5d75" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-open)"/>
+      <rect x="324" y="480" width="72" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="360" y="489" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">&#171;normalize&#187;</text>
+      <!-- R4 PanopticonEvent ..> OfficerIngestionAdapter -->
+      <path d="M 432,624 H 624 Q 632,624 632,616 V 208 Q 632,200 640,200 H 696" fill="none" stroke="#4f5d75" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-open)"/>
+      <rect x="552" y="480" width="72" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="588" y="489" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">&#171;transform&#187;</text>
+      <!-- R5 OfficerIngestionAdapter ..> DetectionRun -->
+      <line x1="824" y1="272" x2="824" y2="336" stroke="#4f5d75" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-open)"/>
+      <rect x="832" y="296" width="48" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="856" y="305" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">&#171;feeds&#187;</text>
+      <!-- R6 DetectionRun composes Alert -->
+      <line x1="824" y1="512" x2="824" y2="576" stroke="#2d3142" stroke-width="1" marker-start="url(#diamond-filled)"/>
+      <rect x="832" y="520" width="16" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="840" y="529" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">1</text>
+      <rect x="832" y="556" width="32" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="848" y="565" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">0..*</text>
+
+      <!-- ===== CLASSES ===== -->
+      <!-- TelemetryCollector (FOCAL, interface) -->
+      <rect x="216" y="128" width="200" height="124" rx="6" fill="#f5f5f5"/>
+      <rect x="216" y="128" width="200" height="124" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <text x="316" y="144" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">&#171;interface&#187;</text>
+      <text x="316" y="162" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">TelemetryCollector</text>
+      <line class="compartment" x1="216" y1="174" x2="416" y2="174" stroke="rgba(235,108,54,0.35)" stroke-width="0.8"/>
+      <text x="228" y="192" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">+ name(): string_view</text>
+      <text x="228" y="208" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">+ start(sink, err, msg): bool</text>
+      <text x="228" y="224" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">+ stop(): void</text>
+      <text x="228" y="240" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">+ running(): bool</text>
+
+      <!-- EtwProcessCollector -->
+      <rect x="64" y="328" width="224" height="112" rx="6" fill="#f5f5f5"/>
+      <rect x="64" y="328" width="224" height="112" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="176" y="352" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">EtwProcessCollector</text>
+      <line class="compartment" x1="64" y1="364" x2="288" y2="364" stroke="rgba(45,49,66,0.25)" stroke-width="0.8"/>
+      <text x="76" y="382" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">- impl_: unique_ptr&lt;Impl&gt;</text>
+      <line class="compartment" x1="64" y1="394" x2="288" y2="394" stroke="rgba(45,49,66,0.25)" stroke-width="0.8"/>
+      <text x="76" y="412" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">+ name(): "etw"</text>
+      <text x="76" y="428" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">+ start(sink, err, msg): bool</text>
+
+      <!-- SysmonEventCollector -->
+      <rect x="344" y="328" width="224" height="112" rx="6" fill="#f5f5f5"/>
+      <rect x="344" y="328" width="224" height="112" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="456" y="352" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">SysmonEventCollector</text>
+      <line class="compartment" x1="344" y1="364" x2="568" y2="364" stroke="rgba(45,49,66,0.25)" stroke-width="0.8"/>
+      <text x="356" y="382" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">- impl_: unique_ptr&lt;Impl&gt;</text>
+      <line class="compartment" x1="344" y1="394" x2="568" y2="394" stroke="rgba(45,49,66,0.25)" stroke-width="0.8"/>
+      <text x="356" y="412" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">+ name(): "sysmon"</text>
+      <text x="356" y="428" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">+ start(sink, err, msg): bool</text>
+
+      <!-- PanopticonEvent -->
+      <rect x="200" y="576" width="232" height="140" rx="6" fill="#f5f5f5"/>
+      <rect x="200" y="576" width="232" height="140" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="316" y="592" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">&#171;schema 0.3&#187;</text>
+      <text x="316" y="610" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">PanopticonEvent</text>
+      <line class="compartment" x1="200" y1="622" x2="432" y2="622" stroke="rgba(45,49,66,0.25)" stroke-width="0.8"/>
+      <text x="212" y="640" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">+ schema_version: str = "0.3"</text>
+      <text x="212" y="656" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">+ event: EventMetadata</text>
+      <text x="212" y="672" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">+ host: HostMetadata</text>
+      <text x="212" y="688" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">+ process: ProcessMetadata</text>
+      <text x="212" y="704" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace">&#8230; source, agent, user, 4 families</text>
+
+      <!-- OfficerIngestionAdapter -->
+      <rect x="696" y="128" width="256" height="144" rx="6" fill="#f5f5f5"/>
+      <rect x="696" y="128" width="256" height="144" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="824" y="152" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">OfficerIngestionAdapter</text>
+      <line class="compartment" x1="696" y1="164" x2="952" y2="164" stroke="rgba(45,49,66,0.25)" stroke-width="0.8"/>
+      <text x="708" y="182" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">+ SCHEMA_VERSION: str</text>
+      <text x="708" y="198" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">+ SUPPORTED_SCHEMA_VERSIONS: tuple</text>
+      <line class="compartment" x1="696" y1="210" x2="952" y2="210" stroke="rgba(45,49,66,0.25)" stroke-width="0.8"/>
+      <text x="708" y="228" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">+ is_officer_event(raw): bool</text>
+      <text x="708" y="244" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">+ transform_officer_event(raw): dict</text>
+      <text x="708" y="260" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">+ parse_line(line): dict | None</text>
+
+      <!-- DetectionRun -->
+      <rect x="696" y="336" width="256" height="176" rx="6" fill="#f5f5f5"/>
+      <rect x="696" y="336" width="256" height="176" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="824" y="360" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">DetectionRun</text>
+      <line class="compartment" x1="696" y1="372" x2="952" y2="372" stroke="rgba(45,49,66,0.25)" stroke-width="0.8"/>
+      <text x="708" y="390" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">- evaluator: RuleEvaluator</text>
+      <text x="708" y="406" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">- threshold_engine: ThresholdEngine</text>
+      <text x="708" y="422" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">- correlation_engine: CorrelationEngine</text>
+      <text x="708" y="438" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">- risk_scorer: EntityRiskScorer</text>
+      <text x="708" y="454" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace">&#8230; 7 more detection engines</text>
+      <line class="compartment" x1="696" y1="466" x2="952" y2="466" stroke="rgba(45,49,66,0.25)" stroke-width="0.8"/>
+      <text x="708" y="484" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">+ process_event(event): List[Alert]</text>
+      <text x="708" y="500" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">- _emit(alert, produced): None</text>
+
+      <!-- Alert -->
+      <rect x="696" y="576" width="256" height="160" rx="6" fill="#f5f5f5"/>
+      <rect x="696" y="576" width="256" height="160" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="824" y="600" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Alert</text>
+      <line class="compartment" x1="696" y1="612" x2="952" y2="612" stroke="rgba(45,49,66,0.25)" stroke-width="0.8"/>
+      <text x="708" y="630" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">+ alert_id: str</text>
+      <text x="708" y="646" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">+ rule_id: str</text>
+      <text x="708" y="662" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">+ level: int</text>
+      <text x="708" y="678" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace">&#8230; severity, mitre, evidence, +9</text>
+      <line class="compartment" x1="696" y1="690" x2="952" y2="690" stroke="rgba(45,49,66,0.25)" stroke-width="0.8"/>
+      <text x="708" y="708" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">+ from_detection_result(res): Alert</text>
+      <text x="708" y="724" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace">+ to_dict(): dict</text>
+
+      <!-- ===== LEGEND ===== -->
+      <line class="legend" x1="32" y1="800" x2="992" y2="800" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <text x="32" y="820" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGEND &#183; UML RELATIONSHIP VOCABULARY</text>
+
+      <line class="legend" x1="32" y1="844" x2="56" y2="844" stroke="#2d3142" stroke-width="1" marker-end="url(#tri-hollow)"/>
+      <text x="76" y="847" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">INHERITANCE</text>
+
+      <line class="legend" x1="192" y1="844" x2="216" y2="844" stroke="#2d3142" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#tri-hollow)"/>
+      <text x="236" y="847" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">REALIZATION</text>
+
+      <line class="legend" x1="352" y1="844" x2="376" y2="844" stroke="#2d3142" stroke-width="1" marker-start="url(#diamond-filled)"/>
+      <text x="396" y="847" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">COMPOSITION</text>
+
+      <line class="legend" x1="512" y1="844" x2="536" y2="844" stroke="#2d3142" stroke-width="1" marker-start="url(#diamond-hollow)"/>
+      <text x="556" y="847" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">AGGREGATION</text>
+
+      <line class="legend" x1="672" y1="844" x2="696" y2="844" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+      <text x="716" y="847" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">ASSOCIATION</text>
+
+      <line class="legend" x1="832" y1="844" x2="856" y2="844" stroke="#4f5d75" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-open)"/>
+      <text x="876" y="847" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">DEPENDENCY</text>
+    </svg>

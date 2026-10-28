@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panopticon Event Lifecycle Activity</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;600&family=Noto+Serif+KR:wght@400&family=Noto+Sans+TC:wght@400;500;600&family=Noto+Serif+TC:wght@400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --color-paper:#f5f5f5; --color-ink:#2d3142; --color-muted:#4f5d75; --color-accent:#eb6c36;
+      --font-sans:'Geist', system-ui, sans-serif; --font-serif:'Instrument Serif', serif; --font-mono:'Geist Mono', ui-monospace, monospace; }
+    body { font-family: var(--font-sans); background: var(--color-paper); color: var(--color-ink);
+           min-height:100vh; display:flex; align-items:center; justify-content:center; padding:3rem 2rem; }
+    .frame { max-width: 1280px; width: 100%; }
+    .eyebrow { font-family: var(--font-mono); font-size:0.66rem; font-weight:500; letter-spacing:0.18em;
+               text-transform:uppercase; color: var(--color-muted); margin-bottom:0.5rem; }
+    h1 { font-family: var(--font-serif); font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem); font-weight:400;
+         letter-spacing:-0.02em; line-height:1.15; color: var(--color-ink); margin-bottom:1.5rem; }
+    svg { width:100%; min-width:960px; display:block; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">UML activity &#183; partitioned &#183; Panopticon&amp;Co</p>
+    <h1>The life of one telemetry event &mdash; partitioned activity</h1>
+
+    <svg viewBox="0 0 1280 856" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pan-act-title pan-act-desc">
+      <title id="pan-act-title">Panopticon event lifecycle activity</title>
+      <desc id="pan-act-desc">Four partitions follow one event: the Officer agent collects, normalizes and posts it; the manager validates each line, commits the valid ones and acknowledges with 200 listing anything rejected; the detection worker later claims the batch, runs detection, persists any alert and marks the event done; the console polls the resulting file and renders the alert table.</desc>
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
+        <marker id="arrow-faint" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="rgba(45,49,66,0.45)"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f5f5f5"/>
+
+      <!-- ===== PARTITION BANDS ===== -->
+      <rect class="decor" x="32" y="104" width="1216" height="160" fill="rgba(45,49,66,0.018)"/>
+      <rect class="decor" x="32" y="424" width="1216" height="160" fill="rgba(45,49,66,0.018)"/>
+      <line class="decor" x1="32" y1="104" x2="1248" y2="104" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+      <line class="decor" x1="32" y1="264" x2="1248" y2="264" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+      <line class="decor" x1="32" y1="424" x2="1248" y2="424" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+      <line class="decor" x1="32" y1="584" x2="1248" y2="584" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+      <line class="decor" x1="32" y1="744" x2="1248" y2="744" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+      <line class="decor" x1="168" y1="104" x2="168" y2="744" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+
+      <text x="100" y="187" fill="rgba(45,49,66,0.50)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">OFFICER AGENT</text>
+      <text x="100" y="347" fill="rgba(45,49,66,0.50)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">MANAGER API</text>
+      <text x="100" y="507" fill="rgba(45,49,66,0.50)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">DETECTION WORKER</text>
+      <text x="100" y="667" fill="rgba(45,49,66,0.50)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">CONSOLE</text>
+
+      <!-- ===== CONTROL FLOWS ===== -->
+      <line x1="208" y1="184" x2="232" y2="184" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="392" y1="184" x2="440" y2="184" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="600" y1="184" x2="648" y2="184" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+      <path d="M 728,216 V 272 Q 728,280 720,280 H 528 Q 520,280 520,288 V 312" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="736" y="240" width="40" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="756" y="249" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">BATCH</text>
+
+      <line x1="600" y1="344" x2="640" y2="344" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="736" y1="344" x2="784" y2="344" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="740" y="324" width="40" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="760" y="333" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">VALID</text>
+      <line x1="944" y1="344" x2="996" y2="344" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <path d="M 688,308 V 304 Q 688,296 696,296 H 992 Q 1000,296 1000,304 V 340" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="852" y="276" width="52" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="878" y="285" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">INVALID</text>
+      <line x1="1004" y1="344" x2="1024" y2="344" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+      <line x1="392" y1="504" x2="440" y2="504" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="600" y1="504" x2="680" y2="504" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="776" y1="504" x2="856" y2="504" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="796" y="484" width="32" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="812" y="493" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">YES</text>
+      <path d="M 728,468 V 460 Q 728,452 736,452 H 1032 Q 1040,452 1040,460 V 500" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="884" y="432" width="32" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="900" y="441" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">NO</text>
+      <line x1="1016" y1="504" x2="1036" y2="504" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="1044" y1="504" x2="1064" y2="504" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+      <line x1="392" y1="664" x2="440" y2="664" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="600" y1="664" x2="650" y2="664" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+      <!-- ===== OBJECT FLOWS ===== -->
+      <path d="M 864,376 V 392 Q 864,400 856,400 H 320 Q 312,400 312,408 V 472" fill="none" stroke="rgba(45,49,66,0.45)" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-faint)"/>
+      <rect x="548" y="408" width="80" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="588" y="417" fill="rgba(45,49,66,0.55)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">EVENTS PENDING</text>
+
+      <path d="M 936,536 V 568 Q 936,576 928,576 H 320 Q 312,576 312,584 V 632" fill="none" stroke="rgba(45,49,66,0.45)" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-faint)"/>
+      <rect x="480" y="556" width="80" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="520" y="565" fill="rgba(45,49,66,0.55)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">ALERTS.NDJSON</text>
+
+      <!-- ===== CONTROL NODES ===== -->
+      <circle cx="200" cy="184" r="8" fill="#2d3142"/>
+      <circle cx="664" cy="664" r="10" fill="none" stroke="#2d3142" stroke-width="1.2"/>
+      <circle cx="664" cy="664" r="6" fill="#2d3142"/>
+      <circle cx="1000" cy="344" r="4" fill="#2d3142"/>
+      <circle cx="1040" cy="504" r="4" fill="#2d3142"/>
+      <polygon points="688,308 736,344 688,380 640,344" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="688" y="347" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">valid?</text>
+      <polygon points="728,468 776,504 728,540 680,504" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="728" y="507" fill="#2d3142" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">alert?</text>
+
+      <!-- ===== ACTIVITIES ===== -->
+      <rect x="232" y="152" width="160" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="232" y="152" width="160" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="312" y="180" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Collect event</text>
+      <text x="312" y="198" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">ETW + Sysmon</text>
+
+      <rect x="440" y="152" width="160" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="440" y="152" width="160" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="520" y="180" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Normalize</text>
+      <text x="520" y="198" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">to Schema 0.3</text>
+
+      <rect x="648" y="152" width="160" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="648" y="152" width="160" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="728" y="180" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Batch + POST</text>
+      <text x="728" y="198" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">WinHTTP, HTTPS</text>
+
+      <rect x="440" y="312" width="160" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="440" y="312" width="160" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="520" y="340" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Validate lines</text>
+      <text x="520" y="358" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">per-event schema</text>
+
+      <rect x="784" y="312" width="160" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="784" y="312" width="160" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="864" y="340" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Commit as pending</text>
+      <text x="864" y="358" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">INSERT OR IGNORE</text>
+
+      <rect x="1024" y="312" width="160" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="1024" y="312" width="160" height="64" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <text x="1104" y="340" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Ack 200</text>
+      <text x="1104" y="358" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">accepted + rejected[]</text>
+
+      <rect x="232" y="472" width="160" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="232" y="472" width="160" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="312" y="500" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Claim batch</text>
+      <text x="312" y="518" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">lease 60s, max 256</text>
+
+      <rect x="440" y="472" width="160" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="440" y="472" width="160" height="64" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <text x="520" y="500" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Run detection</text>
+      <text x="520" y="518" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">86 rules, 11 engines</text>
+
+      <rect x="856" y="472" width="160" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="856" y="472" width="160" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="936" y="500" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Persist alert</text>
+      <text x="936" y="518" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">row + ndjson line</text>
+
+      <rect x="1064" y="472" width="160" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="1064" y="472" width="160" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="1144" y="500" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Mark done</text>
+      <text x="1144" y="518" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">detect_state=done</text>
+
+      <rect x="232" y="632" width="160" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="232" y="632" width="160" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="312" y="660" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Poll alerts</text>
+      <text x="312" y="678" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">GET /api/alerts, 3s</text>
+
+      <rect x="440" y="632" width="160" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="440" y="632" width="160" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="520" y="660" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Render table</text>
+      <text x="520" y="678" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">alert + evidence</text>
+
+      <!-- ===== LEGEND ===== -->
+      <line class="legend" x1="32" y1="784" x2="1248" y2="784" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <text x="32" y="804" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGEND</text>
+
+      <circle class="legend" cx="38" cy="830" r="6" fill="#2d3142"/>
+      <text x="54" y="833" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">INITIAL NODE</text>
+
+      <circle class="legend" cx="238" cy="830" r="7" fill="none" stroke="#2d3142" stroke-width="1.2"/>
+      <circle class="legend" cx="238" cy="830" r="4" fill="#2d3142"/>
+      <text x="254" y="833" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">FINAL NODE</text>
+
+      <rect class="legend" x="432" y="824" width="16" height="12" rx="3" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="458" y="833" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">ACTIVITY</text>
+
+      <rect class="legend" x="632" y="824" width="16" height="12" rx="3" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <text x="658" y="833" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">FOCAL ACTIVITY</text>
+
+      <polygon class="legend" points="840,822 852,830 840,838 828,830" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="860" y="833" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">DECISION / MERGE</text>
+
+      <line class="legend" x1="1048" y1="830" x2="1072" y2="830" stroke="rgba(45,49,66,0.45)" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-faint)"/>
+      <text x="1084" y="833" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">OBJECT FLOW</text>
+    </svg>
+  </div>
+</body>
+</html>

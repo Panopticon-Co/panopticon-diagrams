@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1120 720" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pan-arch-title pan-arch-desc">
+      <title id="pan-arch-title">Panopticon EDR system architecture</title>
+      <desc id="pan-arch-desc">Telemetry flows from Windows ETW and Sysmon providers through the Officer agent, is uploaded over HTTPS to the manager's ingest API, committed to SQLite, then claimed by a detection worker that drives the vendored eyedetect engine, whose alerts are written to the database and to an append-only NDJSON file the console polls.</desc>
+      <defs>
+  <style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap');</style>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/></marker>
+        <marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2e5aa8"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f5f5f5"/>
+
+      <!-- ============ ZONES (painted first) ============ -->
+      <rect x="32" y="104" width="288" height="504" rx="8" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <rect x="48" y="108" width="96" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="96" y="117" fill="rgba(45,49,66,0.40)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">WINDOWS ENDPOINT</text>
+
+      <rect x="376" y="104" width="504" height="504" rx="8" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <rect x="392" y="108" width="72" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="428" y="117" fill="rgba(45,49,66,0.40)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">MANAGER HOST</text>
+
+      <!-- ============ CONNECTORS (before nodes) ============ -->
+      <!-- A -> B -->
+      <line x1="176" y1="208" x2="176" y2="288" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="184" y="236" width="56" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="212" y="245" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">RAW EVENT</text>
+      <!-- B -> C -->
+      <line x1="176" y1="376" x2="176" y2="488" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="184" y="400" width="72" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="220" y="409" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">NDJSON LINE</text>
+      <!-- C -> D  (trust boundary crossing, HTTPS) -->
+      <path d="M 288,532 H 336 Q 344,532 344,524 V 180 Q 344,172 352,172 H 408" fill="none" stroke="#2e5aa8" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <rect x="272" y="440" width="64" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="304" y="449" fill="#2e5aa8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">HTTPS POST</text>
+      <!-- D -> E -->
+      <line x1="496" y1="208" x2="496" y2="288" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="504" y="236" width="80" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="544" y="245" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">COMMIT EVENTS</text>
+      <!-- E -> F -->
+      <line x1="496" y1="376" x2="496" y2="464" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="504" y="424" width="80" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="544" y="433" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">CLAIM PENDING</text>
+      <!-- F -> G -->
+      <line x1="584" y1="508" x2="672" y2="508" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="588" y="488" width="80" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="628" y="497" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">PROCESS EVENT</text>
+      <!-- G -> E  (alert row) -->
+      <path d="M 712,464 V 416 Q 712,408 704,408 H 544 Q 536,408 536,400 V 376" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="588" y="388" width="72" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="624" y="397" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">INSERT ALERT</text>
+      <!-- G -> H -->
+      <line x1="784" y1="464" x2="784" y2="360" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="792" y="400" width="48" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="816" y="409" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">APPEND</text>
+      <!-- H -> I -->
+      <line x1="848" y1="324" x2="912" y2="324" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="856" y="304" width="48" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="880" y="313" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">POLL 3s</text>
+
+      <!-- ============ NODES ============ -->
+      <!-- A  ETW + Sysmon (input) -->
+      <rect x="64" y="136" width="224" height="72" rx="6" fill="#f5f5f5"/>
+      <rect x="64" y="136" width="224" height="72" rx="6" fill="rgba(79,93,117,0.10)" stroke="#7a8399" stroke-width="1"/>
+      <rect x="72" y="144" width="28" height="12" rx="2" fill="transparent" stroke="rgba(122,131,153,0.40)" stroke-width="0.8"/>
+      <text x="86" y="153" fill="rgba(122,131,153,0.90)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">SRC</text>
+      <text x="176" y="174" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">ETW + Sysmon</text>
+      <text x="176" y="190" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">kernel + Operational log</text>
+
+      <!-- B  Officer Agent (backend) -->
+      <rect x="64" y="288" width="224" height="88" rx="6" fill="#f5f5f5"/>
+      <rect x="64" y="288" width="224" height="88" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="72" y="296" width="40" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+      <text x="92" y="305" fill="rgba(45,49,66,0.80)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">AGENT</text>
+      <text x="176" y="334" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Officer Agent</text>
+      <text x="176" y="350" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">decode / normalize 0.3</text>
+
+      <!-- C  Uploader (backend) -->
+      <rect x="64" y="488" width="224" height="88" rx="6" fill="#f5f5f5"/>
+      <rect x="64" y="488" width="224" height="88" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="72" y="496" width="28" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+      <text x="86" y="505" fill="rgba(45,49,66,0.80)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">NET</text>
+      <text x="176" y="534" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Uploader</text>
+      <text x="176" y="550" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">batch &#183; WinHTTP</text>
+
+      <!-- D  Ingest API (FOCAL) -->
+      <rect x="408" y="136" width="176" height="72" rx="6" fill="#f5f5f5"/>
+      <rect x="408" y="136" width="176" height="72" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <rect x="416" y="144" width="28" height="12" rx="2" fill="transparent" stroke="rgba(235,108,54,0.40)" stroke-width="0.8"/>
+      <text x="430" y="153" fill="rgba(235,108,54,0.90)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">API</text>
+      <text x="496" y="174" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Ingest API</text>
+      <text x="496" y="190" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">/api/v1/ingest</text>
+
+      <!-- E  SQLite (store) -->
+      <rect x="408" y="288" width="176" height="88" rx="6" fill="#f5f5f5"/>
+      <rect x="408" y="288" width="176" height="88" rx="6" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="1"/>
+      <rect x="416" y="296" width="24" height="12" rx="2" fill="transparent" stroke="rgba(79,93,117,0.40)" stroke-width="0.8"/>
+      <text x="428" y="305" fill="rgba(79,93,117,0.90)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">DB</text>
+      <text x="496" y="334" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">panopticon.db</text>
+      <text x="496" y="350" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">events &#183; alerts (WAL)</text>
+
+      <!-- F  Detection Worker (backend) -->
+      <rect x="408" y="464" width="176" height="88" rx="6" fill="#f5f5f5"/>
+      <rect x="408" y="464" width="176" height="88" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="416" y="472" width="44" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+      <text x="438" y="481" fill="rgba(45,49,66,0.80)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">THREAD</text>
+      <text x="496" y="510" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Detection Worker</text>
+      <text x="496" y="526" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">claim &#183; lease 60s</text>
+
+      <!-- G  DetectionRun (FOCAL) -->
+      <rect x="672" y="464" width="176" height="88" rx="6" fill="#f5f5f5"/>
+      <rect x="672" y="464" width="176" height="88" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <rect x="680" y="472" width="44" height="12" rx="2" fill="transparent" stroke="rgba(235,108,54,0.40)" stroke-width="0.8"/>
+      <text x="702" y="481" fill="rgba(235,108,54,0.90)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">ENGINE</text>
+      <text x="760" y="510" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">DetectionRun</text>
+      <text x="760" y="526" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">vendor/eyedetect</text>
+
+      <!-- H  alerts.ndjson (store) -->
+      <rect x="672" y="288" width="176" height="72" rx="6" fill="#f5f5f5"/>
+      <rect x="672" y="288" width="176" height="72" rx="6" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="1"/>
+      <rect x="680" y="296" width="36" height="12" rx="2" fill="transparent" stroke="rgba(79,93,117,0.40)" stroke-width="0.8"/>
+      <text x="698" y="305" fill="rgba(79,93,117,0.90)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">FILE</text>
+      <text x="760" y="326" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">alerts.ndjson</text>
+      <text x="760" y="342" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">append-only</text>
+
+      <!-- I  Console (external) -->
+      <rect x="912" y="288" width="176" height="72" rx="6" fill="#f5f5f5"/>
+      <rect x="912" y="288" width="176" height="72" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
+      <rect x="920" y="296" width="24" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.30)" stroke-width="0.8"/>
+      <text x="932" y="305" fill="rgba(45,49,66,0.60)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">UI</text>
+      <text x="1000" y="326" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Console</text>
+      <text x="1000" y="342" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">127.0.0.1:8787</text>
+
+      <!-- ============ CALLOUT ============ -->
+      <text x="880" y="72" fill="#2d3142" font-size="14" font-style="italic" font-family="'Instrument Serif', serif" text-anchor="end">Ack at 200 before detection runs</text>
+      <path d="M 672 80 Q 620 104 592 152" fill="none" stroke="rgba(45,49,66,0.40)" stroke-width="1" stroke-dasharray="4,3"/>
+      <circle cx="592" cy="152" r="2" fill="#2d3142"/>
+
+      <!-- ============ LEGEND ============ -->
+      <line x1="32" y1="644" x2="1088" y2="644" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <text x="32" y="664" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGEND</text>
+
+      <rect x="32" y="684" width="12" height="12" rx="2" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <text x="52" y="693" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">FOCAL COMPONENT</text>
+
+      <rect x="208" y="684" width="12" height="12" rx="2" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="228" y="693" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">SERVICE / THREAD</text>
+
+      <rect x="384" y="684" width="12" height="12" rx="2" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="1"/>
+      <text x="404" y="693" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">DATA STORE</text>
+
+      <rect x="560" y="684" width="12" height="12" rx="2" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
+      <text x="580" y="693" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">EXTERNAL PROCESS</text>
+
+      <rect x="736" y="684" width="12" height="12" rx="2" fill="rgba(79,93,117,0.10)" stroke="#7a8399" stroke-width="1"/>
+      <text x="756" y="693" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">TELEMETRY SOURCE</text>
+
+      <line x1="912" y1="690" x2="936" y2="690" stroke="#2e5aa8" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <text x="948" y="693" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">HTTPS CALL</text>
+    </svg>
