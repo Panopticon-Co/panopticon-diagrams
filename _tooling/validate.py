@@ -1,9 +1,9 @@
 import json, os, pathlib, re, sys
 
 # This repository (panopticon-diagrams) only contains diagrams; the source it is
-# validated against lives in the three sibling repositories. By default we look for
+# validated against lives in six sibling repositories. By default we look for
 # them as siblings of this repo's own checkout -- the layout you get by cloning all
-# four Panopticon-Co repos into one parent directory. Override with the
+# Panopticon-Co repos into one parent directory. Override with the
 # PANOPTICON_WORKSPACE environment variable if your layout differs.
 DIAG = pathlib.Path(__file__).resolve().parent.parent
 WORKSPACE = pathlib.Path(os.environ.get("PANOPTICON_WORKSPACE", DIAG.parent))
@@ -17,13 +17,14 @@ SKIP = (".git", ".venv", "build-officer-x64", "build", "__pycache__", ".pytest_c
 
 missing = [str(p) for p in (AGENT, MANAGER, ENGINE, CONSOLE, LINUX_AGENT, RESPONSE_ENGINE) if not p.is_dir()]
 if missing:
-    print("validate.py needs the five source repositories checked out beside this one:")
+    print("validate.py needs the six source repositories checked out beside this one:")
     for p in missing:
         print("  missing:", p)
     print()
     print("Clone panopticon-agent, panopticon-manager, panopticon-detection-engine,")
-    print("panopticon-console and panopticon-linux-agent as siblings of this repository,")
-    print("or set PANOPTICON_WORKSPACE to the directory that contains all five.")
+    print("panopticon-console, panopticon-linux-agent and panopticon-response-engine")
+    print("as siblings of this repository, or set PANOPTICON_WORKSPACE to the")
+    print("directory that contains all six.")
     sys.exit(2)
 
 def read_all(base, pats):
