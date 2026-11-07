@@ -79,7 +79,7 @@ if you want a new diagram, you author the HTML/SVG yourself.
    ```
 
    CI runs this same script automatically on every push and pull request by
-   checking out all five sibling repositories.
+   checking out all six sibling source repositories.
 
 ## Naming and terminology
 
